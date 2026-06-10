@@ -1,0 +1,21 @@
+app:
+  version: 1.0.0
+  id: 1b42618f-b50c-4fae-8f6d-a881b42b6bc0
+extensions:
+  - key: app-hub
+    resource: main
+    target: pcm:global:app:hub
+    resolver:
+      function: resolver
+    title: Script Guru
+    route: "script-guru"
+functions:
+  - key: resolver
+    handler: index.resolver
+resources:
+  - key: main
+    path: web/hello-world/dist
+permissions:
+  scopes:
+    - pcp:read:pjm:workitem
+    - pcp:write:pjm:workitem

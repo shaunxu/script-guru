@@ -1,0 +1,55 @@
+<div class="container mt-5">
+  <h1 class="mb-4 fw-bold text-dark">Script Guru</h1>
+  
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
+      <ul class="nav nav-tabs card-header-tabs border-0">
+        <li class="nav-item">
+          <button 
+            class="nav-link fw-semibold"
+            [class.active]="activeTab() === 'script-console'"
+            (click)="setActiveTab('script-console')"
+          >
+            Script Console
+          </button>
+        </li>
+      </ul>
+      
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary fw-semibold px-4" (click)="runScript()">
+          Run
+        </button>
+      </div>
+    </div>
+    
+    <div class="card-body p-0">
+      @if (activeTab() === 'script-console') {
+        <div class="script-console">
+          <div class="editor-section border-bottom">
+            <div class="section-label">
+              Input (TypeScript)
+            </div>
+            <div class="code-editor-container">
+              <textarea 
+                class="code-input"
+                [(ngModel)]="scriptInput"
+                spellcheck="false"
+              ></textarea>
+            </div>
+          </div>
+          
+          <div class="output-section">
+            <div class="section-label">
+              Output
+            </div>
+            <textarea 
+              class="code-output"
+              [(ngModel)]="scriptOutput"
+              readonly
+            ></textarea>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

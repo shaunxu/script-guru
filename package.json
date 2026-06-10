@@ -1,0 +1,24 @@
+{
+  "name": "nexus-pjm-project-hub",
+  "version": "1.0.0",
+  "description": "Nexus project hub hello world",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build-web": "cd web/hello-world && npm run build",
+    "build": "tsc && npm run build-web",
+    "test": "tsx scripts/bootstrap.ts",
+    "serve": "cd web/hello-world && npm run start"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.22.4",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@pc-nexus/core": "^0.5.0-next.14",
+    "@pc-nexus/network": "^0.5.0-next.14",
+    "@pc-nexus/storage": "^0.5.0-next.14",
+    "quickjs-emscripten": "^0.32.0"
+  }
+}
