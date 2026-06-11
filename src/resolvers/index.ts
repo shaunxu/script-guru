@@ -74,7 +74,7 @@ function convertToQuickJSHandle(data: unknown, scope: Scope, context: QuickJSCon
     return context.undefined;
 }
 
-resolver.define<{ code: string }, string>("run", async (context, payload) => {
+resolver.define<{ code: string }, unknown>("run", async (context, payload) => {
     const module = await getQuickJS();
     const runtime = module.newRuntime();
     const vm = runtime.newContext();
@@ -141,15 +141,17 @@ ${payload.code}
             const promise = vm.resolvePromise(promiseHandler);
             runtime.executePendingJobs();
 
-            const promiseResult = await promise;
-            if (promiseResult instanceof DisposableSuccess) {
-                return String(vm.dump(promiseResult.value));
+            const promiseResultHandler = await promise;
+            if (promiseResultHandler instanceof DisposableSuccess) {
+                const promiseResult = scope.manage(promiseResultHandler.unwrap());
+                const result = scope.manage(vm.dump(promiseResult));
+                return result;
             }
-            else if (promiseResult instanceof DisposableFail) {
-                throw new Error(`Promise Error: ${JSON.stringify(vm.dump(promiseResult.error))}`);
+            else if (promiseResultHandler instanceof DisposableFail) {
+                throw new Error(`Promise Error: ${JSON.stringify(vm.dump(promiseResultHandler.error))}`);
             }
             else {
-                throw new Error(`Unknown Error: ${JSON.stringify(vm.dump(promiseResult))}`);
+                throw new Error(`Unknown Error: ${JSON.stringify(vm.dump(promiseResultHandler))}`);
             }
         });
 
