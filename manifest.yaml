@@ -8,7 +8,6 @@ extensions:
     resolver:
       function: resolver
     title: Script Guru
-    route: "script-guru"
 functions:
   - key: resolver
     handler: index.resolver
@@ -16,6 +15,11 @@ resources:
   - key: main
     path: web/hello-world/dist
 permissions:
+  content:
+    scripts:
+      - unsafe-inline
+    styles:
+      - unsafe-inline
   scopes:
     - pcp:read:pjm:workitem
     - pcp:write:pjm:workitem
