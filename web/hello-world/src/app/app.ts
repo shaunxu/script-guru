@@ -95,8 +95,11 @@ return JSON.stringify(workitem, null, 2);
     this.showModal.set(true);
   }
 
-  protected deleteSnippet(snippetId: string) {
-    this.snippets.set(this.snippets().filter(s => s.id !== snippetId));
+  protected async deleteSnippet(snippet: Snippet) {
+    if (confirm(`Are you sure you want to delete the snippet "${snippet.title}"?`)) {
+      await invoke('delete_snippet', { id: snippet.id! });
+      this.snippets.set(this.snippets().filter(s => s.id !== snippet.id));
+    }
   }
 
   protected createNewSnippet() {

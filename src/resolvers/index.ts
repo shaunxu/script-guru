@@ -58,7 +58,7 @@ resolver.define<{ id: string }, Snippet>("get_snippet", async (context, payload)
 });
 
 resolver.define<SnippetInput, Snippet>("save_snippet", async (context, payload) => {
-    if (payload.id) {
+    if (payload.id && payload.id.length > 0) {
         await ces.entity<Snippet>("snippets").update(cb => {
             cb.field("id").eq(payload.id!);
         }, payload);
@@ -66,8 +66,8 @@ resolver.define<SnippetInput, Snippet>("save_snippet", async (context, payload) 
     }
     else {
         return ces.entity<Snippet>("snippets").insert({
+            ...payload,
             id: randomUUID(),
-            ...payload
         });
     }
 });
@@ -120,6 +120,12 @@ async function validateSnippetArguments(snippetId: string, args: Record<string, 
 resolver.define<{ id: string, code: string, arguments: Record<string, unknown> }, unknown>("run_snippet", async (context, payload) => {
     await validateSnippetArguments(payload.id, payload.arguments);
     return evaluate(payload.code, payload.arguments);
+});
+
+resolver.define<{ id: string }, void>("delete_snippet", async (context, payload) => {
+    await ces.entity<Snippet>("snippets").delete(cb => {
+        cb.field("id").eq(payload.id);
+    });
 });
 
 
