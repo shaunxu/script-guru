@@ -74,5 +74,10 @@ resolver.define<SnippetInput, Snippet>("save_snippet", async (context, payload) 
     }
 });
 
+resolver.define<{ id: string, code: string, arguments: Record<string, unknown> }, string>("run_snippet", async (context, payload) => {
+
+    return JSON.stringify(payload, null, 2);
+});
+
 
 export { resolver };

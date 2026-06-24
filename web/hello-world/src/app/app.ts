@@ -39,7 +39,7 @@ return JSON.stringify(workitem, null, 2);
   protected readonly showRunModal = signal(false);
   protected runningSnippet: Snippet | null = null;
   protected runningSnippetCode = '';
-  protected runningParameters: Record<string, any> = {};
+  protected runningParameters: Record<string, unknown> = {};
   protected runningOutput = '';
 
   protected async setActiveTab(tabId: string) {
@@ -67,6 +67,18 @@ return JSON.stringify(workitem, null, 2);
     this.runningParameters = {};
     this.runningOutput = '';
     this.showRunModal.set(true);
+  }
+
+  protected async runSnippetCode() {
+    if (!this.runningSnippet) return;
+
+    const result = await invoke("run_snippet", {
+      id: this.runningSnippet.id,
+      code: this.runningSnippetCode,
+      parameters: this.runningParameters
+    });
+
+    alert(JSON.stringify(result, null, 2));
   }
 
   protected closeRunModal() {
