@@ -36,6 +36,12 @@ return JSON.stringify(workitem, null, 2);
   protected modalCode = '';
   protected modalParameters: SnippetParameter[] = [];
 
+  protected readonly showRunModal = signal(false);
+  protected runningSnippet: Snippet | null = null;
+  protected runningSnippetCode = '';
+  protected runningParameters: Record<string, any> = {};
+  protected runningOutput = '';
+
   protected async setActiveTab(tabId: string) {
     this.activeTab.set(tabId);
     if (tabId === 'snippets') {
@@ -54,8 +60,18 @@ return JSON.stringify(workitem, null, 2);
     this.activeTab.set('script-console');
   }
 
-  protected async runSnippet(snippet: Snippet) {
-    // put code here
+  protected async runSnippet(id: string) {
+    const snippet = await invoke("get_snippet", { id });
+    this.runningSnippet = snippet;
+    this.runningSnippetCode = snippet.code;
+    this.runningParameters = {};
+    this.runningOutput = '';
+    this.showRunModal.set(true);
+  }
+
+  protected closeRunModal() {
+    this.showRunModal.set(false);
+    this.runningSnippet = null;
   }
 
   protected editSnippet(snippet: Snippet) {

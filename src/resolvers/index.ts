@@ -46,15 +46,15 @@ resolver.define<void, Snippet[]>("get_snippets", async (context, payload) => {
     });
 });
 
-resolver.define<string, Snippet>("get_snippet", async (context, payload) => {
+resolver.define<{ id: string }, Snippet>("get_snippet", async (context, payload) => {
     const snippets = await ces.entity<Snippet>("snippets").find(cb => {
-        cb.field("id").eq(payload);
+        cb.field("id").eq(payload.id);
     });
     if (snippets.length <= 0) {
-        throw new Error(`Cannot find snippet by id "${payload}"`);
+        throw new Error(`Cannot find snippet by id "${payload.id}"`);
     }
     if (snippets.length > 1) {
-        throw new Error(`Multiple snippets found by id "${payload}"`);
+        throw new Error(`Multiple snippets found by id "${payload.id}"`);
     }
     return snippets[0]!;
 });
