@@ -1,166 +1,78 @@
 import { Resolver } from "@pc-nexus/core";
-import { api } from "@pc-nexus/network";
-import { setTimeout } from "node:timers";
-import { DisposableFail, DisposableSuccess, getQuickJS, QuickJSContext, Scope, type QuickJSHandle } from "quickjs-emscripten";
+import { ces } from "@pc-nexus/storage";
+import { randomUUID } from "crypto";
+import { evaluate } from "../evaluator.js";
+import type { PartialByProperties } from "../typings.js";
 
 const resolver = new Resolver();
+
+type SnippetParameterType = "string" | "number" | "boolean" | "object" | "array";
+
+interface SnippetParameter {
+
+    name: string;
+
+    type: SnippetParameterType;
+
+    required: boolean;
+
+}
+
+interface Snippet {
+
+    id: string;
+
+    title: string;
+
+    parameters: SnippetParameter[];
+
+    code: string;
+
+}
+
+type SnippetInput = PartialByProperties<Snippet, "id">;
 
 resolver.define<string, string>("greeting", async (context, payload) => {
     return `Hello, ${payload}`;
 });
 
-function convertToQuickJSHandle(data: unknown, scope: Scope, context: QuickJSContext, seen = new Map<unknown, QuickJSHandle>()): QuickJSHandle {
-    // 处理基础类型 (这些 Handle 是由 QuickJS 环境常驻的，不需要销毁)
-    if (data === null) return context.null;
-    if (data === undefined) return context.undefined;
-    if (typeof data === "number") return context.newNumber(data);
-    if (typeof data === "string") return scope.manage(context.newString(data));
-    if (typeof data === "boolean") return data ? context.true : context.false;
-    if (typeof data === "bigint") return scope.manage(context.newBigInt(data));
-
-    // 处理循环引用
-    if (seen.has(data)) {
-        return seen.get(data)!;
-    }
-
-    // 处理 Uint8Array (二进制数据)
-    if (data instanceof Uint8Array) {
-        const bufferHandle = scope.manage(context.newArrayBuffer(data.buffer));
-        const Uint8ArrayCtor = scope.manage(context.getProp(context.global, "Uint8Array"));
-        const result = scope.manage(context.callFunction(Uint8ArrayCtor, context.undefined, [bufferHandle]));
-
-        const handle = scope.manage(context.unwrapResult(result));
-        seen.set(data, handle);
-        return handle;
-    }
-
-    // 处理 Date
-    if (data instanceof Date) {
-        const DateCtor = scope.manage(context.getProp(context.global, "Date"));
-        const dateStr = scope.manage(context.newString(data.toISOString()));
-        const result = scope.manage(context.callFunction(DateCtor, context.undefined, [dateStr]));
-
-        const handle = scope.manage(context.unwrapResult(result));
-        seen.set(data, handle);
-        return handle;
-    }
-
-    // 处理数组
-    if (Array.isArray(data)) {
-        const arrayHandle = scope.manage(context.newArray());
-        seen.set(data, arrayHandle);
-
-        data.forEach((item, index) => {
-            const itemHandle = convertToQuickJSHandle(item, scope, context, seen);
-            context.setProp(arrayHandle, index, itemHandle);
-        });
-        return arrayHandle;
-    }
-
-    // 处理普通对象
-    if (typeof data === "object" && data !== null) {
-        const objHandle = scope.manage(context.newObject());
-        seen.set(data, objHandle);
-
-        for (const [key, value] of Object.entries(data)) {
-            if (typeof value !== 'function') {
-                const valueHandle = convertToQuickJSHandle(value, scope, context, seen);
-                context.setProp(objHandle, key, valueHandle);
-            }
-        }
-        return objHandle;
-    }
-
-    return context.undefined;
-}
-
 resolver.define<{ code: string }, unknown>("run", async (context, payload) => {
-    const module = await getQuickJS();
-    const runtime = module.newRuntime();
-    const vm = runtime.newContext();
+    return await evaluate(payload.code);
+});
 
-    runtime.setMemoryLimit(-1);
+resolver.define<void, Snippet[]>("get_snippets", async (context, payload) => {
+    return ces.entity<Snippet>("snippets").find(cb => {
+        cb.field("id").exists(true);
+    });
+});
 
-    try {
-        const result = await Scope.withScopeAsync(async (scope) => {
-            const consoleHandler = scope.manage(vm.newObject());
-            const logHandler = scope.manage(vm.newFunction("log", (...args) => {
-                console.log("[Script Guru]", ...args.map(vm.dump));
-            }));
-            vm.setProp(consoleHandler, "log", logHandler);
-            vm.setProp(vm.global, "console", consoleHandler);
-
-            const waitHandler = scope.manage(vm.newFunction("wait", (timeout) => {
-                const promise = scope.manage(vm.newPromise());
-                setTimeout(() => promise.resolve(), scope.manage(vm.dump(timeout)));
-                promise.settled.then(() => runtime.executePendingJobs());
-                return promise.handle;
-            }));
-            vm.setProp(vm.global, "wait", waitHandler);
-
-            const requestApiHandler = scope.manage(vm.newFunction("requestApi", (routeHandler, methodHandler, bodyHandler) => {
-                const route: string = scope.manage(vm.dump(routeHandler));
-                const method: string = scope.manage(vm.dump(methodHandler));
-                const body: string | undefined = bodyHandler && JSON.stringify(scope.manage(vm.dump(bodyHandler)));
-
-                const promise = scope.manage(vm.newPromise());
-                api.request(route, {
-                    method: method,
-                    headers: {
-                        "context-type": "application/json"
-                    },
-                    body: body,
-                    as: "app"
-                }).then(x => {
-                    if (x.ok) {
-                        return x.json();
-                    }
-                    return promise.reject(convertToQuickJSHandle({
-                        statusCode: x.status,
-                        statusText: x.statusText
-                    }, scope, vm));
-                }).then(x => {
-                    return promise.resolve(convertToQuickJSHandle(x, scope, vm));
-                }).catch(err => {
-                    return promise.reject(err);
-                });
-                promise.settled.then(() => runtime.executePendingJobs());
-                return promise.handle;
-            }));
-            vm.setProp(vm.global, "requestApi", requestApiHandler);
-
-            const code = `(async () => {
-${payload.code}
-})();`;
-            const evalResult = vm.evalCode(code);
-            if (evalResult.error) {
-                throw new Error(`Eval Error: ${JSON.stringify(vm.dump(evalResult.error))}`);
-            }
-
-            const promiseHandler = scope.manage(vm.unwrapResult(evalResult));
-            const promise = vm.resolvePromise(promiseHandler);
-            runtime.executePendingJobs();
-
-            const promiseResultHandler = await promise;
-            if (promiseResultHandler instanceof DisposableSuccess) {
-                const promiseResult = scope.manage(promiseResultHandler.unwrap());
-                const result = scope.manage(vm.dump(promiseResult));
-                return result;
-            }
-            else if (promiseResultHandler instanceof DisposableFail) {
-                throw new Error(`Promise Error: ${JSON.stringify(vm.dump(promiseResultHandler.error))}`);
-            }
-            else {
-                throw new Error(`Unknown Error: ${JSON.stringify(vm.dump(promiseResultHandler))}`);
-            }
-        });
-
-        return result;
+resolver.define<string, Snippet>("get_snippet", async (context, payload) => {
+    const snippets = await ces.entity<Snippet>("snippets").find(cb => {
+        cb.field("id").eq(payload);
+    });
+    if (snippets.length <= 0) {
+        throw new Error(`Cannot find snippet by id "${payload}"`);
     }
-    finally {
-        vm.dispose();
-        runtime.dispose();
+    if (snippets.length > 1) {
+        throw new Error(`Multiple snippets found by id "${payload}"`);
+    }
+    return snippets[0]!;
+});
+
+resolver.define<SnippetInput, Snippet>("save_snippet", async (context, payload) => {
+    if (payload.id) {
+        await ces.entity<Snippet>("snippets").update(cb => {
+            cb.field("id").eq(payload.id!);
+        }, payload);
+        return payload as Snippet;
+    }
+    else {
+        return ces.entity<Snippet>("snippets").insert({
+            id: randomUUID(),
+            ...payload
+        });
     }
 });
+
 
 export { resolver };

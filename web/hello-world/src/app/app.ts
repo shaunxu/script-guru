@@ -9,7 +9,7 @@ interface SnippetParameter {
 }
 
 interface Snippet {
-  id: string;
+  id: string | undefined;
   title: string;
   parameters: SnippetParameter[];
   code: string;
@@ -28,46 +28,20 @@ console.log(JSON.stringify(workitem, null, 2));
 return JSON.stringify(workitem, null, 2);
 `);
   protected readonly scriptOutput = signal<string>('');
-  protected readonly snippets = signal<Snippet[]>([
-    {
-      id: '1',
-      title: '获取工作项',
-      parameters: [
-        { name: 'workItemId', type: 'string', required: true }
-      ],
-      code: `const workitem = await requestApi("v1/project/work_items/oM6fYrsz", "GET");
-console.log(JSON.stringify(workitem, null, 2));
-return JSON.stringify(workitem, null, 2);`
-    },
-    {
-      id: '2',
-      title: '等待示例',
-      parameters: [
-        { name: 'duration', type: 'number', required: true }
-      ],
-      code: `console.log("开始等待...");
-await wait(duration);
-console.log("等待完成");
-return "done";`
-    },
-    {
-      id: '3',
-      title: 'API 请求示例',
-      parameters: [],
-      code: `const result = await requestApi("v1/projects", "GET");
-console.log(JSON.stringify(result, null, 2));
-return result;`
-    }
-  ]);
+  protected readonly snippets = signal<Snippet[]>([]);
   protected readonly editingSnippet = signal<Snippet | null>(null);
   protected readonly showModal = signal(false);
-  protected nextId = 4;
+  protected modalId: string | undefined = '';
   protected modalTitle = '';
   protected modalCode = '';
   protected modalParameters: SnippetParameter[] = [];
 
-  protected setActiveTab(tabId: string) {
+  protected async setActiveTab(tabId: string) {
     this.activeTab.set(tabId);
+    if (tabId === 'snippets') {
+      const snippets = await invoke("get_snippets");
+      this.snippets.set(snippets);
+    }
   }
 
   protected async runScript() {
@@ -81,13 +55,12 @@ return result;`
   }
 
   protected async runSnippet(snippet: Snippet) {
-    this.scriptInput.set(snippet.code);
-    await this.runScript();
-    this.activeTab.set('script-console');
+    // put code here
   }
 
   protected editSnippet(snippet: Snippet) {
     this.editingSnippet.set({ ...snippet, parameters: [...snippet.parameters] });
+    this.modalId = snippet.id;
     this.modalTitle = snippet.title;
     this.modalCode = snippet.code;
     this.modalParameters = snippet.parameters.map(p => ({ ...p }));
@@ -100,7 +73,7 @@ return result;`
 
   protected createNewSnippet() {
     this.editingSnippet.set({
-      id: this.nextId.toString(),
+      id: undefined,
       title: '',
       parameters: [],
       code: ''
@@ -119,24 +92,26 @@ return result;`
     this.modalParameters.splice(index, 1);
   }
 
-  protected saveSnippet() {
+  protected async saveSnippet() {
     const snippet = this.editingSnippet();
     if (!snippet) return;
 
-    const updatedSnippet = {
-      ...snippet,
+    const payload = {
+      id: this.modalId,
       title: this.modalTitle,
       parameters: [...this.modalParameters],
       code: this.modalCode
     };
-    const existingIndex = this.snippets().findIndex(s => s.id === snippet.id);
+
+    const savedSnippet = await invoke("save_snippet", payload);
+
+    const existingIndex = this.snippets().findIndex(s => s.id === savedSnippet.id);
     if (existingIndex >= 0) {
       const updated = [...this.snippets()];
-      updated[existingIndex] = updatedSnippet;
+      updated[existingIndex] = savedSnippet;
       this.snippets.set(updated);
     } else {
-      this.snippets.set([...this.snippets(), updatedSnippet]);
-      this.nextId++;
+      this.snippets.set([...this.snippets(), savedSnippet]);
     }
 
     this.closeModal();

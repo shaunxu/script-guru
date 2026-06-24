@@ -21,5 +21,34 @@ permissions:
     styles:
       - unsafe-inline
   scopes:
+    - pcp:storage:app
     - pcp:read:pjm:workitem
     - pcp:write:pjm:workitem
+storage:
+  entities:
+    - name: snippets
+      attributes:
+        - name: id
+          type: string
+          required: true
+        - name: title
+          type: string
+          required: true
+        - name: parameters
+          type: array
+          required: true
+          default: []
+        - name: code
+          type: string
+          required: true
+      indexes:
+        - name: _id_1
+          keys:
+            id: 1
+          options:
+            unique: true
+        - name: _title_1
+          keys:
+            title: 1
+          options:
+            unique: true
