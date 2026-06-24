@@ -39,7 +39,7 @@ return JSON.stringify(workitem, null, 2);
   protected readonly showRunModal = signal(false);
   protected runningSnippet: Snippet | null = null;
   protected runningSnippetCode = '';
-  protected runningParameters: Record<string, unknown> = {};
+  protected runningArguments: Record<string, unknown> = {};
   protected runningOutput = '';
 
   protected async setActiveTab(tabId: string) {
@@ -64,7 +64,7 @@ return JSON.stringify(workitem, null, 2);
     const snippet = await invoke("get_snippet", { id });
     this.runningSnippet = snippet;
     this.runningSnippetCode = snippet.code;
-    this.runningParameters = {};
+    this.runningArguments = {};
     this.runningOutput = '';
     this.showRunModal.set(true);
   }
@@ -75,7 +75,7 @@ return JSON.stringify(workitem, null, 2);
     const result = await invoke("run_snippet", {
       id: this.runningSnippet.id,
       code: this.runningSnippetCode,
-      parameters: this.runningParameters
+      arguments: this.runningArguments
     });
 
     alert(JSON.stringify(result, null, 2));

@@ -220,14 +220,14 @@
                            <input 
                              type="text" 
                              class="form-control" 
-                             [(ngModel)]="runningParameters[param.name]"
+                             [(ngModel)]="runningArguments[param.name]"
                            >
                          }
                          @case ('number') {
                            <input 
                              type="number" 
                              class="form-control" 
-                             [(ngModel)]="runningParameters[param.name]"
+                             [(ngModel)]="runningArguments[param.name]"
                            >
                          }
                          @case ('boolean') {
@@ -235,18 +235,18 @@
                              <input 
                                type="checkbox" 
                                class="form-check-input" 
-                               [(ngModel)]="runningParameters[param.name]"
+                               [(ngModel)]="runningArguments[param.name]"
                                id="param-{{param.name}}"
                              >
                              <label class="form-check-label" for="param-{{param.name}}">
-                               {{ runningParameters[param.name] ? 'true' : 'false' }}
+                               {{ runningArguments[param.name] ? 'true' : 'false' }}
                              </label>
                            </div>
                          }
                          @case ('object') {
                            <textarea 
                              class="code-input" 
-                             [(ngModel)]="runningParameters[param.name]"
+                             [(ngModel)]="runningArguments[param.name]"
                              spellcheck="false"
                              rows="6"
                            ></textarea>
@@ -254,7 +254,7 @@
                          @case ('array') {
                            <textarea 
                              class="code-input" 
-                             [(ngModel)]="runningParameters[param.name]"
+                             [(ngModel)]="runningArguments[param.name]"
                              spellcheck="false"
                              rows="6"
                            ></textarea>

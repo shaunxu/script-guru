@@ -61,7 +61,7 @@ function convertToQuickJSHandle(data: unknown, scope: Scope, context: QuickJSCon
     return context.undefined;
 }
 
-export async function evaluate(code: string): Promise<unknown> {
+export async function evaluate(code: string, args: Record<string, unknown>): Promise<unknown> {
     const module = await getQuickJS();
     const runtime = module.newRuntime();
     const vm = runtime.newContext();
@@ -70,6 +70,12 @@ export async function evaluate(code: string): Promise<unknown> {
 
     try {
         const result = await Scope.withScopeAsync(async (scope) => {
+            const argumentsHandler = scope.manage(vm.newObject());
+            for (const key in args) {
+                vm.setProp(argumentsHandler, key, convertToQuickJSHandle(args[key], scope, vm));
+            }
+            vm.setProp(vm.global, "args", argumentsHandler);
+
             const consoleHandler = scope.manage(vm.newObject());
             const logHandler = scope.manage(vm.newFunction("log", (...args) => {
                 console.log("[Script Guru]", ...args.map(vm.dump));
