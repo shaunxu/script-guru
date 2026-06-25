@@ -72,10 +72,30 @@ return JSON.stringify(workitem, null, 2);
   protected async runSnippetCode() {
     if (!this.runningSnippet) return;
 
+    const processedArguments: Record<string, unknown> = {};
+    for (const param of this.runningSnippet.parameters) {
+      const value = this.runningArguments[param.name];
+      if (value !== undefined && value !== null && value !== '') {
+        try {
+          if (param.type === 'object' || param.type === 'array') {
+            processedArguments[param.name] = JSON.parse(value as string);
+          } else {
+            processedArguments[param.name] = value;
+          }
+        } catch (e) {
+          alert(`Invalid ${param.type} for parameter "${param.name}": ${(e as Error).message}`);
+          return;
+        }
+      } else if (param.required) {
+        alert(`Parameter "${param.name}" is required`);
+        return;
+      }
+    }
+
     const result = await invoke("run_snippet", {
       id: this.runningSnippet.id,
       code: this.runningSnippetCode,
-      arguments: this.runningArguments
+      arguments: processedArguments
     });
 
     alert(JSON.stringify(result, null, 2));
