@@ -20,6 +20,15 @@
             Snippets
           </button>
         </li>
+        <li class="nav-item">
+          <button
+            class="nav-link fw-semibold"
+            [class.active]="activeTab() === 'automations'"
+            (click)="setActiveTab('automations')"
+          >
+            Automations
+          </button>
+        </li>
       </ul>
     </div>
 
@@ -29,6 +38,9 @@
       }
       @if (activeTab() === 'snippets') {
         <app-snippets />
+      }
+      @if (activeTab() === 'automations') {
+        <app-automations />
       }
     </div>
   </div>

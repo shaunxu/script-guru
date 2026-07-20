@@ -1,0 +1,18 @@
+<div class="automations-container">
+  <div class="automations-header">
+    <button class="btn btn-primary" (click)="onCreate()">
+      Create
+    </button>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <tbody>
+        @for (automation of automations(); track automation.id) {
+          <tr>
+            <td class="align-middle">{{ automation.title }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
