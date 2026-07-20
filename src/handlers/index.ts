@@ -2,16 +2,7 @@ import type { SystemEventHandlerFunction } from "@pc-nexus/core";
 import type { ChangedEventPayload } from "@pc-nexus/internal";
 import { ces } from "@pc-nexus/storage";
 import { evaluate } from "../evaluator.js";
-
-interface Automation {
-
-    id: string;
-
-    event: string;
-
-    code: string;
-
-}
+import { type Automation } from "../typings.js";
 
 const handle: SystemEventHandlerFunction = async (context, event) => {
     // do not process event those triggered by system
@@ -30,7 +21,10 @@ const handle: SystemEventHandlerFunction = async (context, event) => {
 
     // find all automations matches current event
     const automations = await ces.entity<Automation>("automations").find(cb => {
-        cb.field("event").eq(event.event_type!);
+        cb.and(and => {
+            and.field("event").eq(event.event_type!);
+            and.field("enabled").eq(true);
+        })
     });
     await Promise.all(automations.map(x => {
         evaluate(x.code, {
