@@ -1,0 +1,31 @@
+<div class="script-console">
+  <div class="editor-section border-bottom">
+    <div class="section-label">
+      Input (TypeScript)
+    </div>
+    <div class="code-editor-container">
+      <textarea
+        class="code-input"
+        [(ngModel)]="scriptInput"
+        spellcheck="false"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="button-section">
+    <button class="btn btn-success fw-semibold w-100 py-3" (click)="runScript()">
+      Run
+    </button>
+  </div>
+
+  <div class="output-section">
+    <div class="section-label">
+      Output
+    </div>
+    <textarea
+      class="code-output"
+      [(ngModel)]="scriptOutput"
+      readonly
+    ></textarea>
+  </div>
+</div>

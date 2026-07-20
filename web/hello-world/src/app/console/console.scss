@@ -1,0 +1,61 @@
+.script-console {
+  height: 650px;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-section,
+.output-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.button-section {
+  padding: 16px;
+  flex-shrink: 0;
+}
+
+.section-label {
+  padding: 12px 20px;
+  background: #f8f9fa;
+  font-weight: 700;
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.code-editor-container {
+  flex: 1;
+  overflow: hidden;
+  background: #1e1e1e;
+}
+
+.code-input {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre;
+  overflow: auto;
+  word-wrap: normal;
+  background: #1e1e1e;
+  color: #ffffff;
+  caret-color: #ffffff;
+}
+
+.code-output {
+  flex: 1;
+  padding: 20px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  background: #f8f9fa;
+  color: #212529;
+  height: 325px;
+  resize: none;
+}
