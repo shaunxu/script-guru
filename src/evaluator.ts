@@ -97,7 +97,7 @@ export async function evaluate(code: string, args: Record<string, unknown>): Pro
                 const body: string | undefined = bodyHandler && JSON.stringify(scope.manage(vm.dump(bodyHandler)));
 
                 const promise = scope.manage(vm.newPromise());
-                api.request(route, {
+                api.invoke(route, {
                     method: method,
                     headers: {
                         "context-type": "application/json"

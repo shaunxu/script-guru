@@ -42,13 +42,13 @@ storage:
           type: string
           required: true
       indexes:
-        - name: _id_1
+        - name: id_1
           keys:
-            id: 1
+            - id: 1
           options:
             unique: true
-        - name: _title_1
+        - name: title_1
           keys:
-            title: 1
+            - title: 1
           options:
             unique: true
