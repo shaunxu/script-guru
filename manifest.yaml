@@ -83,6 +83,12 @@ storage:
         - name: id
           type: string
           required: true
+        - name: title
+          type: string
+          required: true
+        - name: enabled
+          type: boolean
+          required: true
         - name: event
           type: string
           required: true
@@ -95,3 +101,12 @@ storage:
             - id: 1
           options:
             unique: true
+        - name: title_1
+          keys:
+            - title: 1
+          options:
+            unique: true
+        - name: event_1_enabled_1
+          keys:
+            - event: 1
+            - enabled: 1

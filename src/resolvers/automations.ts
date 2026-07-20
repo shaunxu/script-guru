@@ -4,6 +4,6 @@ import type { Automation } from "../typings.js";
 
 export function registerAutomationsResolvers(resolver: Resolver) {
     resolver.define<void, Automation[]>("get_automations", async (context, payload) => {
-        return ces.entity<Automation>("automations").find(cb => { });
+        return ces.entity<Automation>("automations").find();
     });
 }

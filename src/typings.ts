@@ -4,10 +4,12 @@ export interface Automation {
 
     id: string;
 
-    enabled: boolean;
+    title: string;
 
     event: string;
 
     code: string;
+
+    enabled: boolean;
 
 }
