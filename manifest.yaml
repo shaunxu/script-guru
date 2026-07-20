@@ -11,6 +11,8 @@ extensions:
 functions:
   - key: resolver
     handler: index.resolver
+  - key: system-trigger-handler
+    handler: handlers/index.handle
 resources:
   - key: main
     path: web/hello-world/dist
@@ -24,6 +26,30 @@ permissions:
     - pcp:storage:app
     - pcp:read:pjm:workitem
     - pcp:write:pjm:workitem
+    - pcp:read:pjm:configuration
+    - pcp:read:pjm:sprint
+    - pcp:read:pjm:release
+    - pcp:read:pjm:board
+    - pcp:read:pjm:board
+event:
+  triggers:
+    - key: system-trigger
+      type: system
+      events:
+        # pjm workitem
+        - pce:pjm:workitem:created
+        - pce:pjm:workitem:updated
+        - pce:pjm:workitem:viewed
+        - pce:pjm:workitem:deleted
+        - pce:pjm:workitem:link:added
+        - pce:pjm:workitem:link:removed
+        - pce:pjm:workitem:comment:created
+        - pce:pjm:configuration:field:created
+        - pce:pjm:configuration:workitemtype:created
+      filter:
+        ignoreSelf: true
+      handler:
+        function: system-trigger-handler
 storage:
   entities:
     - name: snippets
@@ -50,5 +76,22 @@ storage:
         - name: title_1
           keys:
             - title: 1
+          options:
+            unique: true
+    - name: automations
+      attributes:
+        - name: id
+          type: string
+          required: true
+        - name: event
+          type: string
+          required: true
+        - name: code
+          type: string
+          required: true
+      indexes:
+        - name: id_1
+          keys:
+            - id: 1
           options:
             unique: true
