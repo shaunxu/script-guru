@@ -103,7 +103,7 @@ storage:
           required: false
         - name: last_executed_status
           type: string
-          required: true
+          required: false
       indexes:
         - name: id_1
           keys:

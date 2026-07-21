@@ -9,8 +9,8 @@ export interface Automation {
   title: string;
   event: string;
   code: string;
-  executedCount: number;
-  lastExecuted: string | null;
-  lastStatus: AutomationStatus | null;
+  executedCount?: number;
+  lastExecuted?: string | null;
+  lastStatus?: AutomationStatus | null;
   enabled: boolean;
 }

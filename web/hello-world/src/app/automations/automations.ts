@@ -50,6 +50,7 @@ export class Automations implements OnInit {
   protected readonly AutomationStatus = AutomationStatus;
   protected readonly showModal = signal(false);
 
+  protected modalId: string | undefined = undefined;
   protected modalTitle = '';
   protected modalEnabled = 'Yes';
   protected modalCode = '';
@@ -94,51 +95,33 @@ export class Automations implements OnInit {
   }
 
   protected async getAutomations() {
-    const testAutomations: Automation[] = [
-      {
-        id: '1',
-        title: 'Issue Created Notification',
-        event: 'issue.created',
-        code: '',
-        executedCount: 156,
-        lastExecuted: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-        lastStatus: AutomationStatus.Success,
-        enabled: true
-      },
-      {
-        id: '2',
-        title: 'Auto Assign to Sprint',
-        event: 'issue.updated',
-        code: '',
-        executedCount: 42,
-        lastExecuted: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-        lastStatus: AutomationStatus.Failed,
-        enabled: false
-      },
-      {
-        id: '3',
-        title: 'Daily Status Report',
-        event: 'schedule.daily',
-        code: '',
-        executedCount: 12,
-        lastExecuted: null,
-        lastStatus: null,
-        enabled: true
-      }
-    ];
-
-    this.automations.set(testAutomations);
-    // const automations = await invoke('get_automations');
-    // this.automations.set(automations);
+    const automations = await invoke<Automation[]>('get_automations');
+    this.automations.set(automations);
   }
 
   protected onCreate() {
+    this.modalId = undefined;
     this.modalTitle = '';
     this.selectedModuleKey = '';
     this.selectedTargetKey = '';
     this.selectedEventKey = '';
-    this.modalEnabled = 'Yes';
+    this.modalEnabled = 'No';
     this.modalCode = '';
+    this.showModal.set(true);
+  }
+
+  protected async onEdit(automation: Automation) {
+    const detail = await invoke('get_automation', { id: automation.id! }) as Automation;
+    this.modalId = detail.id;
+    this.modalTitle = detail.title;
+    this.modalCode = detail.code;
+    this.modalEnabled = detail.enabled ? 'Yes' : 'No';
+
+    const parts = detail.event.split(':');
+    this.selectedModuleKey = parts[0] || '';
+    this.selectedTargetKey = parts.length > 2 ? parts.slice(1, -1).join(':') : (parts[1] || '');
+    this.selectedEventKey = parts[parts.length - 1] || '';
+
     this.showModal.set(true);
   }
 
@@ -148,6 +131,7 @@ export class Automations implements OnInit {
 
   protected async saveAutomation() {
     const payload = {
+      id: this.modalId,
       title: this.modalTitle,
       event: this.selectedEventValue,
       enabled: this.modalEnabled === 'Yes',
@@ -156,8 +140,7 @@ export class Automations implements OnInit {
 
     await invoke('save_automation', payload);
 
-    // TODO: 刷新列表，待后端 get_automations 可用后替换
-    // await this.getAutomations();
+    await this.getAutomations();
 
     this.closeModal();
   }
@@ -175,9 +158,6 @@ export class Automations implements OnInit {
   protected onHistory(automation: Automation) {
   }
 
-  protected onEdit(automation: Automation) {
-  }
-
   protected async onDelete(automation: Automation) {
     if (confirm(`Are you sure you want to delete automation "${automation.title}"?`)) {
       await invoke('delete_automation', { id: automation.id });
@@ -185,7 +165,7 @@ export class Automations implements OnInit {
     }
   }
 
-  protected formatDate(dateStr: string | null): string {
+  protected formatDate(dateStr: string | null | undefined): string {
     if (!dateStr) return '-';
     const date = new Date(dateStr);
     return date.toLocaleString();
