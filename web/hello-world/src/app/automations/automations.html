@@ -61,3 +61,65 @@
     </table>
   </div>
 </div>
+
+@if (showModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeModal()">
+    <div class="modal-dialog modal-dialog-centered modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New Automation</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Title</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="modalTitle"
+              placeholder="Enter automation title"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Event</label>
+            <div class="event-options">
+              <select class="form-select" [(ngModel)]="modalEvent">
+                <option value=""></option>
+              </select>
+              <select class="form-select" [(ngModel)]="modalEvent">
+                <option value=""></option>
+              </select>
+              <select class="form-select" [(ngModel)]="modalEvent">
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Enabled</label>
+            <select class="form-select form-select-sm enabled-select" [(ngModel)]="modalEnabled">
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Code</label>
+            <div class="code-editor-container-modal">
+              <textarea
+                class="code-input-modal"
+                [(ngModel)]="modalCode"
+                spellcheck="false"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="saveAutomation()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

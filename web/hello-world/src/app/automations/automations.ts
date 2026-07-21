@@ -1,28 +1,35 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { invoke } from '@pc-nexus/bridge';
 import { Automation, AutomationStatus } from '../types/automation.model';
 
 @Component({
   selector: 'app-automations',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './automations.html',
   styleUrl: './automations.scss'
 })
 export class Automations implements OnInit {
   protected readonly automations = signal<Automation[]>([]);
   protected readonly AutomationStatus = AutomationStatus;
+  protected readonly showModal = signal(false);
+
+  protected modalTitle = '';
+  protected modalEvent = '';
+  protected modalEnabled = 'Yes';
+  protected modalCode = '';
 
   ngOnInit() {
     this.getAutomations();
   }
 
   protected async getAutomations() {
-    // 临时测试数据
     const testAutomations: Automation[] = [
       {
         id: '1',
         title: 'Issue Created Notification',
         event: 'issue.created',
+        code: '',
         executedCount: 156,
         lastExecuted: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
         lastStatus: AutomationStatus.Success,
@@ -32,6 +39,7 @@ export class Automations implements OnInit {
         id: '2',
         title: 'Auto Assign to Sprint',
         event: 'issue.updated',
+        code: '',
         executedCount: 42,
         lastExecuted: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
         lastStatus: AutomationStatus.Failed,
@@ -41,19 +49,45 @@ export class Automations implements OnInit {
         id: '3',
         title: 'Daily Status Report',
         event: 'schedule.daily',
+        code: '',
         executedCount: 12,
         lastExecuted: null,
         lastStatus: null,
         enabled: true
       }
     ];
-    
+
     this.automations.set(testAutomations);
     // const automations = await invoke('get_automations');
     // this.automations.set(automations);
   }
 
   protected onCreate() {
+    this.modalTitle = '';
+    this.modalEvent = '';
+    this.modalEnabled = 'Yes';
+    this.modalCode = '';
+    this.showModal.set(true);
+  }
+
+  protected closeModal() {
+    this.showModal.set(false);
+  }
+
+  protected async saveAutomation() {
+    const payload = {
+      title: this.modalTitle,
+      event: this.modalEvent,
+      enabled: this.modalEnabled === 'Yes',
+      code: this.modalCode
+    };
+
+    await invoke('save_automation', payload);
+
+    // TODO: 刷新列表，待后端 get_automations 可用后替换
+    // await this.getAutomations();
+
+    this.closeModal();
   }
 
   protected async onToggleEnabled(automation: Automation) {
