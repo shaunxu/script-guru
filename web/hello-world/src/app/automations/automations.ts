@@ -3,6 +3,42 @@ import { FormsModule } from '@angular/forms';
 import { invoke } from '@pc-nexus/bridge';
 import { Automation, AutomationStatus } from '../types/automation.model';
 
+const EVENTS = [
+  {
+    module: {
+      key: "pjm",
+      description: "Project"
+    },
+    target: [
+      {
+        key: "workitem",
+        description: "Workitem",
+        events: [
+          { key: "created", description: "Created" },
+          { key: "updated", description: "Updated" },
+          { key: "viewed", description: "Viewed" },
+          { key: "deleted", description: "Deleted" }
+        ]
+      },
+      {
+        key: "workitem:link",
+        description: "Workitem Relationsip",
+        events: [
+          { key: "added", description: "Added" },
+          { key: "removed", description: "Removed" }
+        ]
+      },
+      {
+        key: "workitem:comment",
+        description: "Workitem Comment",
+        events: [
+          { key: "created", description: "Created" }
+        ]
+      }
+    ]
+  }
+];
+
 @Component({
   selector: 'app-automations',
   imports: [FormsModule],
@@ -15,9 +51,43 @@ export class Automations implements OnInit {
   protected readonly showModal = signal(false);
 
   protected modalTitle = '';
-  protected modalEvent = '';
   protected modalEnabled = 'Yes';
   protected modalCode = '';
+
+  protected selectedModuleKey = '';
+  protected selectedTargetKey = '';
+  protected selectedEventKey = '';
+
+  protected get eventModules() {
+    return EVENTS;
+  }
+
+  protected get currentTargets() {
+    const mod = EVENTS.find(m => m.module.key === this.selectedModuleKey);
+    return mod ? mod.target : [];
+  }
+
+  protected get currentEvents() {
+    const mod = EVENTS.find(m => m.module.key === this.selectedModuleKey);
+    const target = mod?.target.find(t => t.key === this.selectedTargetKey);
+    return target ? target.events : [];
+  }
+
+  protected get selectedEventValue(): string {
+    if (this.selectedModuleKey && this.selectedTargetKey && this.selectedEventKey) {
+      return `${this.selectedModuleKey}:${this.selectedTargetKey}:${this.selectedEventKey}`;
+    }
+    return '';
+  }
+
+  protected onModuleChange() {
+    this.selectedTargetKey = '';
+    this.selectedEventKey = '';
+  }
+
+  protected onTargetChange() {
+    this.selectedEventKey = '';
+  }
 
   ngOnInit() {
     this.getAutomations();
@@ -64,7 +134,9 @@ export class Automations implements OnInit {
 
   protected onCreate() {
     this.modalTitle = '';
-    this.modalEvent = '';
+    this.selectedModuleKey = '';
+    this.selectedTargetKey = '';
+    this.selectedEventKey = '';
     this.modalEnabled = 'Yes';
     this.modalCode = '';
     this.showModal.set(true);
@@ -77,7 +149,7 @@ export class Automations implements OnInit {
   protected async saveAutomation() {
     const payload = {
       title: this.modalTitle,
-      event: this.modalEvent,
+      event: this.selectedEventValue,
       enabled: this.modalEnabled === 'Yes',
       code: this.modalCode
     };

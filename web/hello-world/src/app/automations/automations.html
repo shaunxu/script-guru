@@ -84,14 +84,23 @@
           <div class="mb-3">
             <label class="form-label fw-semibold">Event</label>
             <div class="event-options">
-              <select class="form-select" [(ngModel)]="modalEvent">
-                <option value=""></option>
+              <select class="form-select" [(ngModel)]="selectedModuleKey" (ngModelChange)="onModuleChange()">
+                <option value="">Select Module</option>
+                @for (mod of eventModules; track mod.module.key) {
+                  <option [value]="mod.module.key">{{ mod.module.description }}</option>
+                }
               </select>
-              <select class="form-select" [(ngModel)]="modalEvent">
-                <option value=""></option>
+              <select class="form-select" [(ngModel)]="selectedTargetKey" (ngModelChange)="onTargetChange()" [disabled]="!selectedModuleKey">
+                <option value="">Select Target</option>
+                @for (target of currentTargets; track target.key) {
+                  <option [value]="target.key">{{ target.description }}</option>
+                }
               </select>
-              <select class="form-select" [(ngModel)]="modalEvent">
-                <option value=""></option>
+              <select class="form-select" [(ngModel)]="selectedEventKey" [disabled]="!selectedTargetKey">
+                <option value="">Select Event</option>
+                @for (evt of currentEvents; track evt.key) {
+                  <option [value]="evt.key">{{ evt.description }}</option>
+                }
               </select>
             </div>
           </div>
