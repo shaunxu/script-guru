@@ -36,7 +36,6 @@ event:
     - key: system-trigger
       type: system
       events:
-        # pjm workitem
         - pce:pjm:workitem:created
         - pce:pjm:workitem:updated
         - pce:pjm:workitem:viewed
@@ -95,6 +94,16 @@ storage:
         - name: code
           type: string
           required: true
+        - name: n_executed
+          type: number
+          required: true
+          default: 0
+        - name: last_executed_at
+          type: number
+          required: false
+        - name: last_executed_status
+          type: string
+          required: true
       indexes:
         - name: id_1
           keys:
@@ -110,3 +119,32 @@ storage:
           keys:
             - event: 1
             - enabled: 1
+    - name: automation_executions
+      attributes:
+        - name: id
+          type: string
+          required: true
+        - name: automation_id
+          type: string
+          required: true
+        - name: event
+          type: object
+          required: true
+        - name: executed_at
+          type: number
+          required: true
+        - name: status
+          type: string
+          required: true
+        - name: error
+          type: object
+          required: false
+      indexes:
+        - name: id_1
+          keys:
+            - id: 1
+          options:
+            unique: true
+        - name: automation_id_1
+          keys:
+            - automation_id: 1
