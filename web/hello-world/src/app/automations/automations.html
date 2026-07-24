@@ -152,7 +152,7 @@
               </thead>
               <tbody>
                 @for (execution of historyExecutions(); track execution.id) {
-                  <tr>
+                  <tr class="clickable-row" (click)="onViewExecution(execution)">
                     <td class="align-middle">{{ execution.executed_at | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                     <td class="align-middle">
                       @if (execution.status === AutomationStatus.Success) {
@@ -179,6 +179,66 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeHistoryModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showDetailModal() && detailExecution) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeDetailModal()">
+    <div class="modal-dialog modal-dialog-centered modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Execution Detail</h5>
+          <button type="button" class="btn-close" (click)="closeDetailModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Executed At</label>
+            <div>{{ detailExecution.executed_at | date:'yyyy-MM-dd HH:mm:ss' }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Status</label>
+            <div>
+              @if (detailExecution.status === AutomationStatus.Success) {
+                <span class="badge bg-success">Success</span>
+              } @else if (detailExecution.status === AutomationStatus.Fail) {
+                <span class="badge bg-danger">Failed</span>
+              } @else if (detailExecution.status === AutomationStatus.Unknown) {
+                <span class="badge bg-warning text-dark">Running</span>
+              }
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Event</label>
+            <div class="code-editor-container-modal code-readonly-container">
+              <textarea class="code-input-modal code-readonly" [value]="detailEvent" readonly spellcheck="false"></textarea>
+            </div>
+          </div>
+
+          @if (detailExecution.status === AutomationStatus.Success) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Result</label>
+              <div class="code-editor-container-modal code-readonly-container">
+                <textarea class="code-input-modal code-readonly" [value]="detailResult" readonly spellcheck="false"></textarea>
+              </div>
+            </div>
+          }
+
+          @if (detailExecution.status === AutomationStatus.Fail) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Error</label>
+              <div class="code-editor-container-modal code-readonly-container">
+                <textarea class="code-input-modal code-readonly" [value]="detailError" readonly spellcheck="false"></textarea>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Close</button>
         </div>
       </div>
     </div>

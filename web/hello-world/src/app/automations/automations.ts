@@ -53,6 +53,11 @@ export class Automations implements OnInit {
   protected readonly showHistoryModal = signal(false);
   protected readonly historyExecutions = signal<AutomationExecution[]>([]);
   protected historyTitle = '';
+  protected readonly showDetailModal = signal(false);
+  protected detailExecution: AutomationExecution | null = null;
+  protected detailEvent = '';
+  protected detailResult = '';
+  protected detailError = '';
 
   protected modalId: string | undefined = undefined;
   protected modalTitle = '';
@@ -169,6 +174,27 @@ export class Automations implements OnInit {
 
   protected closeHistoryModal() {
     this.showHistoryModal.set(false);
+  }
+
+  protected onViewExecution(execution: AutomationExecution) {
+    this.detailExecution = execution;
+    this.detailEvent = this.formatJson(execution.event);
+    this.detailResult = this.formatJson(execution.result);
+    this.detailError = this.formatJson(execution.error);
+    this.showDetailModal.set(true);
+  }
+
+  protected closeDetailModal() {
+    this.showDetailModal.set(false);
+  }
+
+  private formatJson(value: unknown): string {
+    if (value === undefined || value === null) return '';
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch {
+      return String(value);
+    }
   }
 
   protected async onDelete(automation: Automation) {

@@ -20,4 +20,7 @@ export interface AutomationExecution {
   automation_id: string;
   executed_at: number;
   status: AutomationStatus;
+  event: unknown;
+  result?: unknown;
+  error?: unknown;
 }

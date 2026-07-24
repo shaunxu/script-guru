@@ -87,3 +87,19 @@
   color: #ffffff;
   outline: none;
 }
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.code-readonly-container {
+  height: 200px;
+}
+
+.code-readonly {
+  cursor: default;
+}
