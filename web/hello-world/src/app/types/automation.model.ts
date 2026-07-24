@@ -1,7 +1,7 @@
 export enum AutomationStatus {
-  Success = 'success',
-  Failed = 'failed',
-  Running = 'running'
+  Success = 'Success',
+  Fail = 'Fail',
+  Unknown = 'Unknown'
 }
 
 export interface Automation {
@@ -9,8 +9,15 @@ export interface Automation {
   title: string;
   event: string;
   code: string;
-  executedCount?: number;
-  lastExecuted?: string | null;
-  lastStatus?: AutomationStatus | null;
+  executedCount: number;
+  lastExecuted: number | null;
+  lastStatus: AutomationStatus | null;
   enabled: boolean;
+}
+
+export interface AutomationExecution {
+  id: string;
+  automation_id: string;
+  executed_at: number;
+  status: AutomationStatus;
 }

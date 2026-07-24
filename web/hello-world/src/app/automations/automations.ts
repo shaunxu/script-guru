@@ -1,7 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { invoke } from '@pc-nexus/bridge';
-import { Automation, AutomationStatus } from '../types/automation.model';
+import { Automation, AutomationExecution, AutomationStatus } from '../types/automation.model';
 
 const EVENTS = [
   {
@@ -41,7 +42,7 @@ const EVENTS = [
 
 @Component({
   selector: 'app-automations',
-  imports: [FormsModule],
+  imports: [FormsModule, DatePipe],
   templateUrl: './automations.html',
   styleUrl: './automations.scss'
 })
@@ -49,6 +50,9 @@ export class Automations implements OnInit {
   protected readonly automations = signal<Automation[]>([]);
   protected readonly AutomationStatus = AutomationStatus;
   protected readonly showModal = signal(false);
+  protected readonly showHistoryModal = signal(false);
+  protected readonly historyExecutions = signal<AutomationExecution[]>([]);
+  protected historyTitle = '';
 
   protected modalId: string | undefined = undefined;
   protected modalTitle = '';
@@ -155,7 +159,16 @@ export class Automations implements OnInit {
     }
   }
 
-  protected onHistory(automation: Automation) {
+  protected async onHistory(automation: Automation) {
+    this.historyTitle = automation.title;
+    this.historyExecutions.set([]);
+    this.showHistoryModal.set(true);
+    const executions = await invoke<{ automationId: string }, AutomationExecution[]>('get_automation_executions', { automationId: automation.id! });
+    this.historyExecutions.set(executions);
+  }
+
+  protected closeHistoryModal() {
+    this.showHistoryModal.set(false);
   }
 
   protected async onDelete(automation: Automation) {
@@ -163,11 +176,5 @@ export class Automations implements OnInit {
       await invoke('delete_automation', { id: automation.id });
       this.automations.set(this.automations().filter(a => a.id !== automation.id));
     }
-  }
-
-  protected formatDate(dateStr: string | null | undefined): string {
-    if (!dateStr) return '-';
-    const date = new Date(dateStr);
-    return date.toLocaleString();
   }
 }
