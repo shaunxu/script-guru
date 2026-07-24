@@ -6,7 +6,7 @@ export function registerConsoleResolvers(resolver: Resolver) {
         return `Hello, ${payload}`;
     });
 
-    resolver.define<{ code: string }, unknown>("run", async (context, payload) => {
-        return evaluate(payload.code, {});
+    resolver.define<{ code: string, args: Record<string, unknown> }, unknown>("run", async (context, payload) => {
+        return evaluate(payload.code, payload.args || {});
     });
 }

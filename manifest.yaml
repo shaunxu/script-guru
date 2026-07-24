@@ -136,6 +136,9 @@ storage:
         - name: status
           type: string
           required: true
+        - name: result
+          type: object
+          required: false
         - name: error
           type: object
           required: false

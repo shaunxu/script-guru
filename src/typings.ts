@@ -1,5 +1,7 @@
 export type PartialByProperties<T, K extends keyof T> = Omit<T, K> & { [Property in K]+?: T[Property] };
 
+export type AutomationExecuteStatus = "Unknown" | "Success" | "Fail";
+
 export interface Automation {
 
     id: string;
@@ -11,5 +13,29 @@ export interface Automation {
     code: string;
 
     enabled: boolean;
+
+    n_executed: number;
+
+    last_executed_at?: number;
+
+    last_executed_status?: AutomationExecuteStatus;
+
+}
+
+export interface AutomationExecution {
+
+    id: string;
+
+    automation_id: string;
+
+    event: unknown;
+
+    executed_at: number;
+
+    status: AutomationExecuteStatus;
+
+    result?: unknown;
+
+    error?: unknown;
 
 }

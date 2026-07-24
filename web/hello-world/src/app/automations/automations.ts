@@ -76,7 +76,7 @@ export class Automations implements OnInit {
 
   protected get selectedEventValue(): string {
     if (this.selectedModuleKey && this.selectedTargetKey && this.selectedEventKey) {
-      return `${this.selectedModuleKey}:${this.selectedTargetKey}:${this.selectedEventKey}`;
+      return `pce:${this.selectedModuleKey}:${this.selectedTargetKey}:${this.selectedEventKey}`;
     }
     return '';
   }
@@ -118,8 +118,8 @@ export class Automations implements OnInit {
     this.modalEnabled = detail.enabled ? 'Yes' : 'No';
 
     const parts = detail.event.split(':');
-    this.selectedModuleKey = parts[0] || '';
-    this.selectedTargetKey = parts.length > 2 ? parts.slice(1, -1).join(':') : (parts[1] || '');
+    this.selectedModuleKey = parts[1] || '';
+    this.selectedTargetKey = parts.length > 3 ? parts.slice(2, -1).join(':') : (parts[2] || '');
     this.selectedEventKey = parts[parts.length - 1] || '';
 
     this.showModal.set(true);
