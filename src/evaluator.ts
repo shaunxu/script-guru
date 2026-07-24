@@ -127,7 +127,9 @@ ${code}
 })();`;
             const evalResult = vm.evalCode(wrappedCode);
             if (evalResult.error) {
-                throw new Error(`Eval Error: ${JSON.stringify(vm.dump(evalResult.error))}`);
+                const errorHandle = scope.manage(evalResult.error);
+                const error = vm.dump(errorHandle);
+                throw new Error(`Eval Error: ${error?.message ?? JSON.stringify(error)}`);
             }
 
             const promiseHandler = scope.manage(vm.unwrapResult(evalResult));
@@ -141,7 +143,9 @@ ${code}
                 return result;
             }
             else if (promiseResultHandler instanceof DisposableFail) {
-                throw new Error(`Promise Error: ${JSON.stringify(vm.dump(promiseResultHandler.error))}`);
+                const errorHandle = scope.manage(promiseResultHandler.error);
+                const error = vm.dump(errorHandle);
+                throw new Error(`Promise Error: ${error?.message ?? JSON.stringify(error)}`);
             }
             else {
                 throw new Error(`Unknown Error: ${JSON.stringify(vm.dump(promiseResultHandler))}`);
