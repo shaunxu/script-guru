@@ -44,42 +44,11 @@
   overflow-y: auto;
 }
 
-.code-editor-modal {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  background: #1e1e1e;
-  color: #ffffff;
-  border: 1px solid #343a40;
-  resize: vertical;
-}
-
-.code-editor-modal:focus {
-  background: #1e1e1e;
-  color: #ffffff;
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
 .button-section {
   padding: 16px 0 0;
   flex-shrink: 0;
 }
 
-.code-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #dee2e6;
-  outline: none;
-  resize: vertical;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  white-space: pre;
-  overflow: auto;
-  word-wrap: normal;
-  background: #1e1e1e;
-  color: #ffffff;
-  caret-color: #ffffff;
-  border-radius: 4px;
+.form-control-code-editor {
+  padding: 0;
 }

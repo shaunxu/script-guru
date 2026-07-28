@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { invoke } from '@pc-nexus/bridge';
 import { Automation, AutomationExecution, AutomationStatus } from '../types/automation.model';
+import { CodeEditor } from '../shared/code-editor/code-editor';
 
 const EVENTS = [
   {
@@ -42,7 +43,7 @@ const EVENTS = [
 
 @Component({
   selector: 'app-automations',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, CodeEditor],
   templateUrl: './automations.html',
   styleUrl: './automations.scss'
 })

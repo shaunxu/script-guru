@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { invoke } from '@pc-nexus/bridge';
+import { CodeEditor } from '../shared/code-editor/code-editor';
 
 const DEFAULT_SCRIPT = `const workitem = await requestApi("v1/project/work_items/oM6fYrsz", "GET");
 console.log(JSON.stringify(workitem, null, 2));
@@ -9,7 +10,7 @@ return JSON.stringify(workitem, null, 2);
 
 @Component({
   selector: 'app-console',
-  imports: [FormsModule],
+  imports: [FormsModule, CodeEditor],
   templateUrl: './console.html',
   styleUrl: './console.scss'
 })

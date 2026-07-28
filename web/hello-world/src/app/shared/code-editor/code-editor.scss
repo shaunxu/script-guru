@@ -1,0 +1,54 @@
+.code-editor-container {
+  overflow: hidden;
+  display: flex;
+  background: #1e1e1e;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.code-editor-container.border-enabled {
+  border: 1px solid;
+}
+
+.code-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', monospace;
+  white-space: pre;
+  overflow: auto;
+  word-wrap: normal;
+  caret-color: #ffffff;
+}
+
+.code-input:focus {
+  outline: none;
+}
+
+.theme-dark {
+  background: #1e1e1e;
+
+  .code-input {
+    background: #1e1e1e;
+    color: #ffffff;
+    caret-color: #ffffff;
+  }
+}
+
+.theme-light {
+  background: #f8f9fa;
+
+  .code-input {
+    background: #f8f9fa;
+    color: #212529;
+    caret-color: #212529;
+  }
+}
+
+.readonly-mode {
+  .code-input {
+    cursor: default;
+  }
+}

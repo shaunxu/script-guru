@@ -1,0 +1,23 @@
+<div class="code-editor-container"
+  [class.theme-dark]="theme === 'dark'"
+  [class.theme-light]="theme === 'light'"
+  [class.border-enabled]="border"
+  [class.readonly-mode]="readonly"
+  [style.height]="height || (rows ? 'auto' : '100%')"
+  [style.border-color]="borderColor"
+>
+  <textarea
+    class="code-input"
+    [value]="value"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+    [readonly]="readonly"
+    [disabled]="disabled"
+    [attr.rows]="rows || null"
+    spellcheck="false"
+    [style.resize]="resize"
+    [style.font-size]="fontSize"
+    [style.line-height]="lineHeight"
+    [style.padding]="padding"
+  ></textarea>
+</div>

@@ -128,16 +128,20 @@
                </table>
              </div>
            </div>
-           <div class="mb-3">
-             <label for="snippetCode" class="form-label">CODE</label>
-             <textarea
-               class="form-control code-editor-modal"
-               id="snippetCode"
-               [(ngModel)]="modalCode"
-               rows="12"
-               spellcheck="false"
-             ></textarea>
-           </div>
+            <div class="mb-3">
+              <label for="snippetCode" class="form-label">CODE</label>
+              <app-code-editor
+                id="snippetCode"
+                [(ngModel)]="modalCode"
+                [rows]="12"
+                [fontSize]="'13px'"
+                [lineHeight]="1.6"
+                [padding]="'12px'"
+                [border]="true"
+                [resize]="'vertical'"
+                class="form-control-code-editor"
+              ></app-code-editor>
+            </div>
          </div>
         <div class="modal-footer">
          <button type="button" class="btn btn-secondary" (click)="closeModal()">CANCEL</button>
@@ -193,20 +197,26 @@
                         </div>
                       }
                       @case ('object') {
-                        <textarea
-                          class="code-input"
+                        <app-code-editor
                           [(ngModel)]="runningArguments[param.name]"
-                          spellcheck="false"
-                          rows="6"
-                        ></textarea>
+                          [rows]="6"
+                          [fontSize]="'13px'"
+                          [lineHeight]="1.6"
+                          [padding]="'12px'"
+                          [border]="true"
+                          [resize]="'vertical'"
+                        ></app-code-editor>
                       }
                       @case ('array') {
-                        <textarea
-                          class="code-input"
+                        <app-code-editor
                           [(ngModel)]="runningArguments[param.name]"
-                          spellcheck="false"
-                          rows="6"
-                        ></textarea>
+                          [rows]="6"
+                          [fontSize]="'13px'"
+                          [lineHeight]="1.6"
+                          [padding]="'12px'"
+                          [border]="true"
+                          [resize]="'vertical'"
+                        ></app-code-editor>
                       }
                     }
                   </div>
@@ -217,12 +227,15 @@
 
           <div class="mb-3">
             <label class="form-label">CODE</label>
-            <textarea
-              class="code-input"
+            <app-code-editor
               [(ngModel)]="runningSnippetCode"
-              spellcheck="false"
-              rows="10"
-            ></textarea>
+              [rows]="10"
+              [fontSize]="'13px'"
+              [lineHeight]="1.6"
+              [padding]="'12px'"
+              [border]="true"
+              [resize]="'vertical'"
+            ></app-code-editor>
           </div>
 
            <div class="button-section mb-3">
