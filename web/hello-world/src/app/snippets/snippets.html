@@ -6,23 +6,37 @@
   </div>
   <div class="table-responsive">
     <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>TITLE</th>
+          <th>PARAMETERS</th>
+          <th></th>
+        </tr>
+      </thead>
       <tbody>
         @for (snippet of snippets(); track snippet.id) {
           <tr>
             <td class="align-middle">{{ snippet.title }}</td>
-             <td class="text-end" style="width: 300px;">
-               <div class="action-buttons">
-                 <button class="btn btn-sm btn-success" (click)="runSnippet(snippet.id!)">
-                   RUN
-                 </button>
-                 <button class="btn btn-sm btn-primary" (click)="editSnippet(snippet)">
-                   EDIT
-                 </button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteSnippet(snippet)">
-                    DELETE
-                  </button>
-               </div>
-             </td>
+            <td class="align-middle">{{ snippet.parameters.length || 0 }}</td>
+            <td class="text-end align-middle" style="width: 280px;">
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-success" (click)="runSnippet(snippet.id!)">
+                  RUN
+                </button>
+                <button class="btn btn-sm btn-primary" (click)="editSnippet(snippet)">
+                  EDIT
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteSnippet(snippet)">
+                  DELETE
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="3" class="text-muted text-center py-4">
+              NO SNIPPETS FOUND
+            </td>
           </tr>
         }
       </tbody>
