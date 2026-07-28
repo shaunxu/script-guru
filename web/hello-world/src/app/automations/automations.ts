@@ -8,32 +8,32 @@ const EVENTS = [
   {
     module: {
       key: "pjm",
-      description: "Project"
+      description: "PROJECT"
     },
     target: [
       {
         key: "workitem",
-        description: "Workitem",
+        description: "WORKITEM",
         events: [
-          { key: "created", description: "Created" },
-          { key: "updated", description: "Updated" },
-          { key: "viewed", description: "Viewed" },
-          { key: "deleted", description: "Deleted" }
+          { key: "created", description: "CREATED" },
+          { key: "updated", description: "UPDATED" },
+          { key: "viewed", description: "VIEWED" },
+          { key: "deleted", description: "DELETED" }
         ]
       },
       {
         key: "workitem:link",
-        description: "Workitem Relationsip",
+        description: "WORKITEM RELATIONSHIP",
         events: [
-          { key: "added", description: "Added" },
-          { key: "removed", description: "Removed" }
+          { key: "added", description: "ADDED" },
+          { key: "removed", description: "REMOVED" }
         ]
       },
       {
         key: "workitem:comment",
-        description: "Workitem Comment",
+        description: "WORKITEM COMMENT",
         events: [
-          { key: "created", description: "Created" }
+          { key: "created", description: "CREATED" }
         ]
       }
     ]
@@ -61,7 +61,7 @@ export class Automations implements OnInit {
 
   protected modalId: string | undefined = undefined;
   protected modalTitle = '';
-  protected modalEnabled = 'Yes';
+  protected modalEnabled = 'YES';
   protected modalCode = '';
 
   protected selectedModuleKey = '';
@@ -114,7 +114,7 @@ export class Automations implements OnInit {
     this.selectedModuleKey = '';
     this.selectedTargetKey = '';
     this.selectedEventKey = '';
-    this.modalEnabled = 'No';
+    this.modalEnabled = 'NO';
     this.modalCode = '';
     this.showModal.set(true);
   }
@@ -124,7 +124,7 @@ export class Automations implements OnInit {
     this.modalId = detail.id;
     this.modalTitle = detail.title;
     this.modalCode = detail.code;
-    this.modalEnabled = detail.enabled ? 'Yes' : 'No';
+    this.modalEnabled = detail.enabled ? 'YES' : 'NO';
 
     const parts = detail.event.split(':');
     this.selectedModuleKey = parts[1] || '';
@@ -143,7 +143,7 @@ export class Automations implements OnInit {
       id: this.modalId,
       title: this.modalTitle,
       event: this.selectedEventValue,
-      enabled: this.modalEnabled === 'Yes',
+      enabled: this.modalEnabled === 'YES',
       code: this.modalCode
     };
 
@@ -198,7 +198,7 @@ export class Automations implements OnInit {
   }
 
   protected async onDelete(automation: Automation) {
-    if (confirm(`Are you sure you want to delete automation "${automation.title}"?`)) {
+    if (confirm(`ARE YOU SURE YOU WANT TO DELETE AUTOMATION "${automation.title}"?`)) {
       await invoke('delete_automation', { id: automation.id });
       this.automations.set(this.automations().filter(a => a.id !== automation.id));
     }

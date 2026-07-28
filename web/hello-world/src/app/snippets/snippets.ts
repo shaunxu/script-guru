@@ -1,11 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { UpperCasePipe } from '@angular/common';
 import { invoke } from '@pc-nexus/bridge';
 import { Snippet, SnippetParameter } from '../types/snippet.model';
 
 @Component({
   selector: 'app-snippets',
-  imports: [FormsModule],
+  imports: [FormsModule, UpperCasePipe],
   templateUrl: './snippets.html',
   styleUrl: './snippets.scss'
 })
@@ -54,11 +55,11 @@ export class Snippets implements OnInit {
             processedArguments[param.name] = value;
           }
         } catch (e) {
-          alert(`Invalid ${param.type} for parameter "${param.name}": ${(e as Error).message}`);
+          alert(`INVALID ${param.type.toUpperCase()} FOR PARAMETER "${param.name}": ${(e as Error).message}`);
           return;
         }
       } else if (param.required) {
-        alert(`Parameter "${param.name}" is required`);
+        alert(`PARAMETER "${param.name}" IS REQUIRED`);
         return;
       }
     }
@@ -87,7 +88,7 @@ export class Snippets implements OnInit {
   }
 
   protected async deleteSnippet(snippet: Snippet) {
-    if (confirm(`Are you sure you want to delete the snippet "${snippet.title}"?`)) {
+    if (confirm(`ARE YOU SURE YOU WANT TO DELETE THE SNIPPET "${snippet.title}"?`)) {
       await invoke('delete_snippet', { id: snippet.id! });
       this.snippets.set(this.snippets().filter(s => s.id !== snippet.id));
     }
