@@ -12,10 +12,19 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { EditorState, Compartment, Extension } from '@codemirror/state';
-import { EditorView, keymap, placeholder as placeholderExt } from '@codemirror/view';
+import {
+  EditorView,
+  keymap,
+  placeholder as placeholderExt,
+  lineNumbers,
+  highlightActiveLineGutter,
+  highlightActiveLine,
+} from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
+import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
+import { bracketMatching } from '@codemirror/language';
 
 @Component({
   selector: 'app-code-editor',
@@ -82,7 +91,12 @@ export class CodeEditor implements ControlValueAccessor, AfterViewInit, OnDestro
 
     const extensions: Extension[] = [
       history(),
-      keymap.of([...defaultKeymap, ...historyKeymap]),
+      lineNumbers(),
+      highlightActiveLineGutter(),
+      highlightActiveLine(),
+      bracketMatching(),
+      closeBrackets(),
+      keymap.of([...defaultKeymap, ...historyKeymap, ...closeBracketsKeymap]),
       javascript({ typescript: true }),
       updateListener,
       this.themeCompartment.of(this.getThemeExtension()),
