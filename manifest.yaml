@@ -8,6 +8,12 @@ extensions:
     resolver:
       function: resolver
     title: Script Guru
+  - key: pcm-pjm-workitem-area
+    resource: tiles
+    target: pcm:pjm:workitem:area
+    resolver:
+      function: resolver
+    title: "TILES"
 functions:
   - key: resolver
     handler: index.resolver
@@ -16,6 +22,8 @@ functions:
 resources:
   - key: main
     path: web/hello-world/dist
+  - key: tiles
+    path: web/tiles
 permissions:
   content:
     scripts:
@@ -151,3 +159,35 @@ storage:
         - name: automation_id_1
           keys:
             - automation_id: 1
+    - name: tiles
+      attributes:
+        - name: id
+          type: string
+          required: true
+        - name: name
+          type: string
+          required: true
+        - name: description
+          type: string
+          required: false
+        - name: target
+          type: string
+          required: true
+        - name: enabled
+          type: boolean
+          required: true
+        - name: code-frontend
+          type: string
+          required: true
+        - name: code-backend
+          type: string
+          required: false
+      indexes:
+        - name: id_1
+          keys:
+            - id: 1
+          options:
+            unique: true
+        - name: target_1
+          keys:
+            - target: 1

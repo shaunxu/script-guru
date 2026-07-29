@@ -122,7 +122,8 @@ export async function evaluate(code: string, args: Record<string, unknown>): Pro
             }));
             vm.setProp(vm.global, "requestApi", requestApiHandler);
 
-            const wrappedCode = `(async () => {
+            const wrappedCode = `"use strict";
+(async () => {
 ${code}
 })();`;
             const evalResult = vm.evalCode(wrappedCode);

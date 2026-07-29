@@ -39,3 +39,21 @@ export interface AutomationExecution {
     error?: unknown;
 
 }
+
+export interface Tile {
+
+    id: string;
+
+    name: string;
+
+    description: string;
+
+    target: string;
+
+    enabled: boolean;
+
+    frontend: string;
+
+    backend: string;
+
+}

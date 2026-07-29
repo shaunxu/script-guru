@@ -5,7 +5,7 @@ import { CodeEditor } from '../shared/code-editor/code-editor';
 
 const DEFAULT_SCRIPT = `const workitem = await requestApi("v1/project/work_items/oM6fYrsz", "GET");
 console.log(JSON.stringify(workitem, null, 2));
-return JSON.stringify(workitem, null, 2);
+return workitem;
 `;
 
 @Component({
