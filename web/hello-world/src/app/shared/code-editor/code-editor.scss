@@ -14,41 +14,106 @@
 .code-input {
   width: 100%;
   height: 100%;
-  border: none;
-  outline: none;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', monospace;
-  white-space: pre;
+  display: flex;
   overflow: auto;
-  word-wrap: normal;
-  caret-color: #ffffff;
 }
 
 .code-input:focus {
   outline: none;
 }
 
+.cm-editor {
+  height: 100%;
+  width: 100%;
+}
+
+.cm-scroller {
+  overflow: auto;
+}
+
+.cm-content {
+  white-space: pre !important;
+  word-wrap: normal !important;
+}
+
 .theme-dark {
   background: #1e1e1e;
 
-  .code-input {
-    background: #1e1e1e;
+  .cm-editor,
+  .cm-scroller,
+  .cm-content,
+  .cm-gutters {
+    background: #1e1e1e !important;
+  }
+
+  .cm-editor {
     color: #ffffff;
-    caret-color: #ffffff;
+    width: 100%;
+  }
+
+  .cm-cursor {
+    border-left-color: #ffffff;
+  }
+
+  .cm-selectionBackground,
+  &.cm-focused .cm-selectionBackground {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  .cm-gutters {
+    border-right: none;
+    color: #666;
+  }
+
+  .cm-activeLineGutter {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .cm-activeLine {
+    background: rgba(255, 255, 255, 0.04);
   }
 }
 
 .theme-light {
   background: #f8f9fa;
 
-  .code-input {
-    background: #f8f9fa;
+  .cm-editor,
+  .cm-scroller,
+  .cm-content,
+  .cm-gutters {
+    background: #f8f9fa !important;
+  }
+
+  .cm-editor {
     color: #212529;
-    caret-color: #212529;
+    width: 100%;
+  }
+
+  .cm-cursor {
+    border-left-color: #212529;
+  }
+
+  .cm-selectionBackground,
+  &.cm-focused .cm-selectionBackground {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .cm-gutters {
+    border-right: none;
+    color: #adb5bd;
+  }
+
+  .cm-activeLineGutter {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .cm-activeLine {
+    background: rgba(0, 0, 0, 0.03);
   }
 }
 
 .readonly-mode {
-  .code-input {
+  .cm-editor {
     cursor: default;
   }
 }
