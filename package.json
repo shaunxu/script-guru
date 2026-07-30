@@ -5,10 +5,11 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build-web": "cd web/hello-world && npm run build",
+    "build-web": "cd web/hello-world && npm run build && cd ../tiles && npm run build",
     "build": "tsc && npm run build-web",
     "test": "tsx scripts/bootstrap.ts",
-    "serve": "cd web/hello-world && npm run start"
+    "serve": "cd web/hello-world && npm run start",
+    "serve-tiles": "cd web/tiles && npm run start"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

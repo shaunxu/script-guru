@@ -23,7 +23,7 @@ resources:
   - key: main
     path: web/hello-world/dist
   - key: tiles
-    path: web/tiles
+    path: web/tiles/dist
 permissions:
   content:
     scripts:
