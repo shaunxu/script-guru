@@ -1,5 +1,4 @@
-import { Component, input, output } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Component, ElementRef, input, output, viewChild, afterNextRender } from '@angular/core';
 import { Tile } from './tile.model';
 
 @Component({
@@ -8,7 +7,7 @@ import { Tile } from './tile.model';
   template: `
     <div class="detail-container">
       <button class="back-button" (click)="back.emit()">← BACK</button>
-      <div class="html-content" [innerHTML]="safeHtml"></div>
+      <div class="html-content" #contentContainer></div>
     </div>
   `,
   styles: [`
@@ -100,9 +99,71 @@ export class TileDetailComponent {
   tile = input.required<Tile>();
   back = output<void>();
 
-  constructor(private sanitizer: DomSanitizer) { }
+  private readonly contentContainer = viewChild<ElementRef<HTMLElement>>('contentContainer');
 
-  get safeHtml(): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(this.tile().html);
+  constructor() {
+    afterNextRender(() => {
+      this.renderHtml();
+    });
+  }
+
+  private renderHtml(): void {
+    const container = this.contentContainer()?.nativeElement;
+    if (!container) return;
+
+    const html = this.tile().html;
+
+    container.innerHTML = '';
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const links = doc.head.querySelectorAll('link[rel="stylesheet"]');
+    links.forEach(link => {
+      const newLink = document.createElement('link');
+      newLink.rel = 'stylesheet';
+      newLink.href = link.getAttribute('href') || '';
+      document.head.appendChild(newLink);
+    });
+
+    const bodyStyles = doc.head.querySelectorAll('style');
+    bodyStyles.forEach(style => {
+      const newStyle = document.createElement('style');
+      newStyle.textContent = style.textContent;
+      document.head.appendChild(newStyle);
+    });
+
+    doc.head.querySelectorAll('script').forEach(oldScript => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes).forEach(attr => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      if (oldScript.textContent) {
+        newScript.textContent = oldScript.textContent;
+      }
+      document.head.appendChild(newScript);
+    });
+
+    const bodyContent = doc.body.innerHTML;
+    container.innerHTML = bodyContent;
+
+    this.executeScripts(container);
+  }
+
+  private executeScripts(container: HTMLElement): void {
+    const scripts = container.querySelectorAll('script');
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement('script');
+
+      Array.from(oldScript.attributes).forEach(attr => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+
+      if (oldScript.textContent) {
+        newScript.textContent = oldScript.textContent;
+      }
+
+      oldScript.parentNode?.replaceChild(newScript, oldScript);
+    });
   }
 }
