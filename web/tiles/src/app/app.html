@@ -1,8 +1,12 @@
-<div class="tiles-container">
-  @for (tile of tiles(); track tile.id) {
-    <div class="tile-card">
-      <div class="tile-title">{{ tile.title }}</div>
-      <div class="tile-description">{{ tile.description }}</div>
-    </div>
-  }
-</div>
+@if (selectedTile(); as tile) {
+  <app-tile-detail [tile]="tile" (back)="goBack()" />
+} @else {
+  <div class="tiles-container">
+    @for (tile of tiles(); track tile.id) {
+      <div class="tile-card" (click)="selectTile(tile)">
+        <div class="tile-title">{{ tile.title }}</div>
+        <div class="tile-description">{{ tile.description }}</div>
+      </div>
+    }
+  </div>
+}
