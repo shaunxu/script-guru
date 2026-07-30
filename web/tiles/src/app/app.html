@@ -1,0 +1,8 @@
+<div class="tiles-container">
+  @for (tile of tiles(); track tile.id) {
+    <div class="tile-card">
+      <div class="tile-title">{{ tile.title }}</div>
+      <div class="tile-description">{{ tile.description }}</div>
+    </div>
+  }
+</div>
