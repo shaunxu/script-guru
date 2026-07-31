@@ -1,0 +1,90 @@
+<div class="tiles-container">
+  <div class="tiles-header">
+    <button class="btn btn-primary" (click)="onCreate()">
+      NEW
+    </button>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>TARGET</th>
+          <th>NAME</th>
+          <th>ENABLED</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tile of tiles(); track tile.id) {
+          <tr>
+            <td class="align-middle">{{ tile.target }}</td>
+            <td class="align-middle">{{ tile.name }}</td>
+            <td class="align-middle">{{ tile.enabled ? 'YES' : 'NO' }}</td>
+            <td class="text-end align-middle" style="width: 200px;">
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-primary" (click)="onEdit(tile)">
+                  EDIT
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="onDelete(tile)">
+                  DELETE
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="text-muted text-center py-4">
+              NO TILES FOUND
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (showModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeModal()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ modalId ? 'EDIT TILE' : 'NEW TILE' }}</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">TARGET</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="modalTarget"
+              placeholder="ENTER TARGET"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">NAME</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="modalName"
+              placeholder="ENTER NAME"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">ENABLED</label>
+            <select class="form-select form-select-sm enabled-select" [(ngModel)]="modalEnabled">
+              <option value="YES">YES</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">CANCEL</button>
+          <button type="button" class="btn btn-primary" (click)="saveTile()">SAVE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
