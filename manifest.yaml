@@ -2,9 +2,9 @@ app:
   version: 1.0.0
   id: 1b42618f-b50c-4fae-8f6d-a881b42b6bc0
 extensions:
-  - key: app-hub
-    resource: main
-    target: pcm:global:app:hub
+  - key: app-setting
+    resource: Setting
+    target: pcm:global:app:setting
     resolver:
       function: resolver
     title: Script Guru
@@ -20,8 +20,8 @@ functions:
   - key: system-trigger-handler
     handler: handlers/index.handle
 resources:
-  - key: main
-    path: web/hello-world/dist
+  - key: admin
+    path: web/admin/dist
   - key: tiles
     path: web/tiles/dist
 permissions:
