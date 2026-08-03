@@ -1,11 +1,10 @@
-import type { SystemEventHandlerFunction } from "@pc-nexus/core";
-import type { ChangedEventPayload } from "@pc-nexus/internal";
+import { type SystemEventHandler, type SystemEventPayload } from "@pc-nexus/event";
 import { ces } from "@pc-nexus/storage";
 import { randomUUID } from "crypto";
 import { evaluate } from "../evaluator.js";
 import type { Automation, AutomationExecution } from "../typings.js";
 
-const handle: SystemEventHandlerFunction = async (context, event) => {
+const handle: SystemEventHandler = async (context, event) => {
     // do not process event those triggered by system
     if (event.payload.source) {
         return;
@@ -18,7 +17,7 @@ const handle: SystemEventHandlerFunction = async (context, event) => {
 
     // retrieve event content
     const data = event.payload.data;
-    const changelog = (event.payload as ChangedEventPayload).changelog;
+    const changelog = (event.payload as SystemEventPayload).changelog;
 
     // find all automations matches current event
     const automations = await ces.entity<Automation>("automations").find(cb => {
