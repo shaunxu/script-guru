@@ -1,0 +1,253 @@
+<div class="snippets-container">
+  <div class="snippets-header">
+    <button class="btn btn-primary" (click)="createNewSnippet()">
+      NEW
+    </button>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>TITLE</th>
+          <th>PARAMETERS</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (snippet of snippets(); track snippet.id) {
+          <tr>
+            <td class="align-middle">{{ snippet.title }}</td>
+            <td class="align-middle">{{ snippet.parameters.length || 0 }}</td>
+            <td class="text-end align-middle" style="width: 280px;">
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-success" (click)="runSnippet(snippet.id!)">
+                  RUN
+                </button>
+                <button class="btn btn-sm btn-primary" (click)="editSnippet(snippet)">
+                  EDIT
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteSnippet(snippet)">
+                  DELETE
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="3" class="text-muted text-center py-4">
+              NO SNIPPETS FOUND
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (showModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeModal()">
+    <div class="modal-dialog modal-dialog-centered modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingSnippet()?.id && snippets().some(s => s.id === editingSnippet()?.id) ? 'EDIT SNIPPET' : 'NEW SNIPPET' }}</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+         <div class="modal-body">
+           <div class="mb-3">
+             <label for="snippetTitle" class="form-label">SNIPPET NAME</label>
+             <input
+               type="text"
+               class="form-control"
+               id="snippetTitle"
+               [(ngModel)]="modalTitle"
+               placeholder="ENTER SNIPPET NAME"
+             >
+           </div>
+           <div class="mb-3">
+             <div class="d-flex justify-content-between align-items-center mb-2">
+               <label class="form-label mb-0">PARAMETERS</label>
+               <button type="button" class="btn btn-sm btn-primary" (click)="addParameter()">
+                 ADD PARAMETER
+               </button>
+             </div>
+             <div class="table-responsive">
+               <table class="table table-bordered">
+                 <thead>
+                   <tr>
+                     <th style="width: 35%;">NAME</th>
+                     <th style="width: 35%;">TYPE</th>
+                     <th style="width: 20%;">REQUIRED</th>
+                     <th style="width: 10%;"></th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   @for (param of modalParameters; track $index) {
+                     <tr>
+                       <td>
+                         <input
+                           type="text"
+                           class="form-control form-control-sm"
+                           [(ngModel)]="modalParameters[$index].name"
+                           placeholder="PARAMETER NAME"
+                         >
+                       </td>
+                       <td>
+                         <select class="form-select form-select-sm" [(ngModel)]="modalParameters[$index].type">
+                           <option value="string">STRING</option>
+                           <option value="number">NUMBER</option>
+                           <option value="boolean">BOOLEAN</option>
+                           <option value="object">OBJECT</option>
+                           <option value="array">ARRAY</option>
+                         </select>
+                       </td>
+                       <td class="text-center">
+                         <input
+                           type="checkbox"
+                           class="form-check-input"
+                           [(ngModel)]="modalParameters[$index].required"
+                         >
+                       </td>
+                       <td class="text-center">
+                         <button
+                           type="button"
+                           class="btn btn-sm btn-outline-danger"
+                           (click)="removeParameter($index)"
+                         >
+                           <span>&times;</span>
+                         </button>
+                       </td>
+                     </tr>
+                   } @empty {
+                     <tr>
+                       <td colspan="4" class="text-muted text-center py-3">
+                         NO PARAMETERS DEFINED
+                       </td>
+                     </tr>
+                   }
+                 </tbody>
+               </table>
+             </div>
+           </div>
+            <div class="mb-3">
+              <label for="snippetCode" class="form-label">CODE</label>
+              <app-code-editor
+                id="snippetCode"
+                [(ngModel)]="modalCode"
+                [rows]="12"
+                [fontSize]="'13px'"
+                [lineHeight]="1.6"
+                [padding]="'12px'"
+                [border]="true"
+                [resize]="'vertical'"
+                class="form-control-code-editor"
+              ></app-code-editor>
+            </div>
+         </div>
+        <div class="modal-footer">
+         <button type="button" class="btn btn-secondary" (click)="closeModal()">CANCEL</button>
+         <button type="button" class="btn btn-primary" (click)="saveSnippet()">SAVE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showRunModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeRunModal()">
+    <div class="modal-dialog modal-dialog-centered modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ runningSnippet?.title }}</h5>
+          <button type="button" class="btn-close" (click)="closeRunModal()"></button>
+        </div>
+        <div class="modal-body">
+          @if (runningSnippet?.parameters && runningSnippet!.parameters!.length > 0) {
+            <div class="mb-3">
+              <label class="form-label">PARAMETERS</label>
+              <div class="parameters-list">
+                @for (param of runningSnippet!.parameters!; track param.name) {
+                  <div class="mb-3">
+                    <label class="form-label">{{ param.name }} <span class="text-muted">({{ param.type | uppercase }})</span>{{ param.required ? '*' : '' }}</label>
+                    @switch (param.type) {
+                      @case ('string') {
+                        <input
+                          type="text"
+                          class="form-control"
+                          [(ngModel)]="runningArguments[param.name]"
+                        >
+                      }
+                      @case ('number') {
+                        <input
+                          type="number"
+                          class="form-control"
+                          [(ngModel)]="runningArguments[param.name]"
+                        >
+                      }
+                      @case ('boolean') {
+                        <div class="form-check">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            [(ngModel)]="runningArguments[param.name]"
+                            id="param-{{param.name}}"
+                          >
+                          <label class="form-check-label" for="param-{{param.name}}">
+                            {{ runningArguments[param.name] ? 'TRUE' : 'FALSE' }}
+                          </label>
+                        </div>
+                      }
+                      @case ('object') {
+                        <app-code-editor
+                          [(ngModel)]="runningArguments[param.name]"
+                          [rows]="6"
+                          [fontSize]="'13px'"
+                          [lineHeight]="1.6"
+                          [padding]="'12px'"
+                          [border]="true"
+                          [resize]="'vertical'"
+                        ></app-code-editor>
+                      }
+                      @case ('array') {
+                        <app-code-editor
+                          [(ngModel)]="runningArguments[param.name]"
+                          [rows]="6"
+                          [fontSize]="'13px'"
+                          [lineHeight]="1.6"
+                          [padding]="'12px'"
+                          [border]="true"
+                          [resize]="'vertical'"
+                        ></app-code-editor>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <div class="mb-3">
+            <label class="form-label">CODE</label>
+            <app-code-editor
+              [(ngModel)]="runningSnippetCode"
+              [rows]="10"
+              [fontSize]="'13px'"
+              [lineHeight]="1.6"
+              [padding]="'12px'"
+              [border]="true"
+              [resize]="'vertical'"
+            ></app-code-editor>
+          </div>
+
+           <div class="button-section mb-3">
+             <button class="btn btn-success fw-semibold w-100 py-2" (click)="runSnippetCode()">
+               RUN
+             </button>
+           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeRunModal()">CLOSE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

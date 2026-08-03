@@ -8,6 +8,12 @@ extensions:
     resolver:
       function: resolver
     title: CONSOLE
+  - key: app-admin-snippets
+    resource: admin-snippets
+    target: pcm:global:app:setting
+    resolver:
+      function: resolver
+    title: SNIPPETS
   - key: app-setting
     resource: admin
     target: pcm:global:app:setting
@@ -28,6 +34,8 @@ functions:
 resources:
   - key: admin-console
     path: web/admin-console/dist
+  - key: admin-snippets
+    path: web/admin-snippets/dist
   - key: admin
     path: web/admin/dist
   - key: tiles
