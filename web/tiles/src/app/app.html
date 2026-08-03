@@ -4,7 +4,7 @@
   <div class="tiles-container">
     @for (tile of tiles(); track tile.id) {
       <div class="tile-card" (click)="selectTile(tile)">
-        <div class="tile-title">{{ tile.title }}</div>
+        <div class="tile-title">{{ tile.name }}</div>
         <div class="tile-description">{{ tile.description }}</div>
       </div>
     }

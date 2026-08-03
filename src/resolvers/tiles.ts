@@ -11,9 +11,13 @@ export function registerTilesResolvers(resolver: Resolver) {
         return ces.entity<Tile>("tiles").find(cb => { });
     });
 
-    resolver.define<{ id: string }, Tile>("get_tile", async (context, payload) => {
-        const tiles = await ces.entity<Tile>("tiles").find(cb => cb.field("id").eq(payload.id));
-        return tiles[0] as Tile;
+    resolver.define<{ target: string }, Tile[]>("get_tiles_by_target", async (context, payload) => {
+        return ces.entity<Tile>("tiles").find(cb => {
+            cb.and(and => {
+                and.field("target").eq(payload.target);
+                and.field("enabled").eq(true);
+            });
+        });
     });
 
     resolver.define<TileInput, Tile>("save_tile", async (context, payload) => {
@@ -29,6 +33,12 @@ export function registerTilesResolvers(resolver: Resolver) {
                 id: randomUUID(),
             });
         }
+    });
+
+    resolver.define<{ id: string }, void>("delete_tile", async (context, payload) => {
+        await ces.entity<Tile>("tiles").delete(cb => {
+            cb.field("id").eq(payload.id);
+        });
     });
 
 }

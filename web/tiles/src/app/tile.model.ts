@@ -1,6 +1,6 @@
 export interface Tile {
   id: string;
-  title: string;
+  name: string;
   description: string;
   html: string;
 }
