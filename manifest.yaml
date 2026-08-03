@@ -3,11 +3,11 @@ app:
   id: 1b42618f-b50c-4fae-8f6d-a881b42b6bc0
 extensions:
   - key: app-setting
-    resource: Setting
+    resource: admin
     target: pcm:global:app:setting
     resolver:
       function: resolver
-    title: Script Guru
+    title: ADMIN
   - key: pcm-pjm-workitem-area
     resource: tiles
     target: pcm:pjm:workitem:area
