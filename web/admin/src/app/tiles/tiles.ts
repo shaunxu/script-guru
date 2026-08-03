@@ -2,7 +2,7 @@ import { KeyValuePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { invoke } from '@pc-nexus/bridge';
-import { CodeEditor } from '../shared/code-editor/code-editor';
+import { CodeEditor } from '@script-guru/shared';
 import { Tile } from '../types/tile.model';
 
 const TILE_TARGETS: Record<string, string> = {

@@ -5,10 +5,12 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build-web": "cd web/admin && npm run build && cd ../tiles && npm run build",
+    "build-shared": "cd web/shared && npm run build",
+    "build-web": "npm run build-shared && cd web/admin && npm run build && cd ../tiles && npm run build && cd ../admin-console && npm run build",
     "build": "tsc && npm run build-web",
     "test": "tsx scripts/bootstrap.ts",
-    "serve": "cd web/hello-world && npm run start",
+    "serve-admin-console": "cd web/admin-console && npm run start",
+    "serve-admin": "cd web/admin && npm run start",
     "serve-tiles": "cd web/tiles && npm run start"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { invoke } from '@pc-nexus/bridge';
 import { Automation, AutomationExecution, AutomationStatus } from '../types/automation.model';
-import { CodeEditor } from '../shared/code-editor/code-editor';
+import { CodeEditor } from '@script-guru/shared';
 
 const EVENTS = [
   {

@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { UpperCasePipe } from '@angular/common';
 import { invoke } from '@pc-nexus/bridge';
 import { Snippet, SnippetParameter } from '../types/snippet.model';
-import { CodeEditor } from '../shared/code-editor/code-editor';
+import { CodeEditor } from '@script-guru/shared';
 
 @Component({
   selector: 'app-snippets',

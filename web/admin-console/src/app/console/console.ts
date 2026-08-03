@@ -12,7 +12,7 @@ return workitem;
   selector: 'app-console',
   imports: [FormsModule, CodeEditor],
   templateUrl: './console.html',
-  styleUrl: './console.scss'
+  styleUrl: './console.scss',
 })
 export class Console {
   protected readonly scriptInput = signal<string>(DEFAULT_SCRIPT);

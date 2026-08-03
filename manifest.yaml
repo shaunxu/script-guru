@@ -2,6 +2,12 @@ app:
   version: 1.0.0
   id: 1b42618f-b50c-4fae-8f6d-a881b42b6bc0
 extensions:
+  - key: app-admin-console
+    resource: admin-console
+    target: pcm:global:app:setting
+    resolver:
+      function: resolver
+    title: CONSOLE
   - key: app-setting
     resource: admin
     target: pcm:global:app:setting
@@ -20,6 +26,8 @@ functions:
   - key: system-trigger-handler
     handler: handlers/index.handle
 resources:
+  - key: admin-console
+    path: web/admin-console/dist
   - key: admin
     path: web/admin/dist
   - key: tiles

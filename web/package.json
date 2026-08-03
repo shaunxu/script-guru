@@ -1,0 +1,11 @@
+{
+  "name": "script-guru-web",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "admin",
+    "admin-console",
+    "tiles"
+  ]
+}
