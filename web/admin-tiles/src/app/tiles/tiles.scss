@@ -1,0 +1,41 @@
+.tiles-container {
+  height: 650px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tiles-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.table-responsive {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.action-buttons .btn {
+  min-width: 70px;
+}
+
+.enabled-select {
+  max-width: 120px;
+}
+
+.target-select {
+  max-width: 320px;
+}

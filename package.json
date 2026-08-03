@@ -6,11 +6,13 @@
   "main": "index.js",
   "scripts": {
     "build-shared": "cd web/shared && npm run build",
-    "build-web": "npm run build-shared && cd web/admin && npm run build && cd ../tiles && npm run build && cd ../admin-console && npm run build && cd ../admin-snippets && npm run build",
+    "build-web": "npm run build-shared && cd web/admin && npm run build && cd ../tiles && npm run build && cd ../admin-console && npm run build && cd ../admin-snippets && npm run build && cd ../admin-automations && npm run build && cd ../admin-tiles && npm run build",
     "build": "tsc && npm run build-web",
     "test": "tsx scripts/bootstrap.ts",
     "serve-admin-console": "cd web/admin-console && npm run start",
     "serve-admin-snippets": "cd web/admin-snippets && npm run start",
+    "serve-admin-automations": "cd web/admin-automations && npm run start",
+    "serve-admin-tiles": "cd web/admin-tiles && npm run start",
     "serve-admin": "cd web/admin && npm run start",
     "serve-tiles": "cd web/tiles && npm run start"
   },

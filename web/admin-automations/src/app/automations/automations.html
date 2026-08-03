@@ -1,0 +1,261 @@
+<div class="automations-container">
+  <div class="automations-header">
+    <button class="btn btn-primary" (click)="onCreate()">
+      NEW
+    </button>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>TITLE</th>
+          <th>EVENT</th>
+          <th>ENABLED</th>
+          <th>RUNS</th>
+          <th>LAST RUN</th>
+          <th>STATUS</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (automation of automations(); track automation.id) {
+          <tr>
+            <td class="align-middle">{{ automation.title }}</td>
+            <td class="align-middle">{{ automation.event }}</td>
+            <td class="align-middle">{{ automation.enabled ? 'YES' : 'NO' }}</td>
+            <td class="align-middle">{{ automation.executedCount }}</td>
+            <td class="align-middle">{{ automation.lastExecuted ? (automation.lastExecuted | date:'yyyy-MM-dd HH:mm:ss') : '-' }}</td>
+            <td class="align-middle">
+              @if (automation.lastStatus === AutomationStatus.Success) {
+                <span class="badge bg-success">SUCCESS</span>
+              } @else if (automation.lastStatus === AutomationStatus.Fail) {
+                <span class="badge bg-danger">FAILED</span>
+              } @else if (automation.lastStatus === AutomationStatus.Unknown) {
+                <span class="badge bg-warning text-dark">RUNNING</span>
+              } @else {
+                <span class="badge bg-secondary">-</span>
+              }
+            </td>
+            <td class="text-end align-middle" style="width: 280px;">
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-secondary" (click)="onHistory(automation)">
+                  HISTORY
+                </button>
+                <button class="btn btn-sm btn-primary" (click)="onEdit(automation)">
+                  EDIT
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="onDelete(automation)">
+                  DELETE
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="text-muted text-center py-4">
+              NO AUTOMATIONS FOUND
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (showModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeModal()">
+    <div class="modal-dialog modal-dialog-centered modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ modalId ? 'EDIT AUTOMATION' : 'NEW AUTOMATION' }}</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">TITLE</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="modalTitle"
+              placeholder="ENTER AUTOMATION TITLE"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">EVENT</label>
+            <div class="event-options">
+              <select class="form-select" [(ngModel)]="selectedModuleKey" (ngModelChange)="onModuleChange()">
+                <option value="">SELECT MODULE</option>
+                @for (mod of eventModules; track mod.module.key) {
+                  <option [value]="mod.module.key">{{ mod.module.description }}</option>
+                }
+              </select>
+              <select class="form-select" [(ngModel)]="selectedTargetKey" (ngModelChange)="onTargetChange()" [disabled]="!selectedModuleKey">
+                <option value="">SELECT TARGET</option>
+                @for (target of currentTargets; track target.key) {
+                  <option [value]="target.key">{{ target.description }}</option>
+                }
+              </select>
+              <select class="form-select" [(ngModel)]="selectedEventKey" [disabled]="!selectedTargetKey">
+                <option value="">SELECT EVENT</option>
+                @for (evt of currentEvents; track evt.key) {
+                  <option [value]="evt.key">{{ evt.description }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">ENABLED</label>
+            <select class="form-select form-select-sm enabled-select" [(ngModel)]="modalEnabled">
+              <option value="YES">YES</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">CODE</label>
+            <div class="code-editor-container-modal">
+              <app-code-editor
+                [(ngModel)]="modalCode"
+                height="350px"
+                [border]="true"
+              ></app-code-editor>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">CANCEL</button>
+          <button type="button" class="btn btn-primary" (click)="saveAutomation()">SAVE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showHistoryModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeHistoryModal()">
+    <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">EXECUTION HISTORY - {{ historyTitle }}</h5>
+          <button type="button" class="btn-close" (click)="closeHistoryModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>EXECUTED AT</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (execution of historyExecutions(); track execution.id) {
+                  <tr class="clickable-row" (click)="onViewExecution(execution)">
+                    <td class="align-middle">{{ execution.executed_at | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td class="align-middle">
+                      @if (execution.status === AutomationStatus.Success) {
+                        <span class="badge bg-success">SUCCESS</span>
+                      } @else if (execution.status === AutomationStatus.Fail) {
+                        <span class="badge bg-danger">FAILED</span>
+                      } @else if (execution.status === AutomationStatus.Unknown) {
+                        <span class="badge bg-warning text-dark">RUNNING</span>
+                      } @else {
+                        <span class="badge bg-secondary">-</span>
+                      }
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="2" class="text-muted text-center py-4">
+                      NO EXECUTION HISTORY FOUND
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeHistoryModal()">CLOSE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showDetailModal() && detailExecution) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeDetailModal()">
+    <div class="modal-dialog modal-dialog-centered modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">EXECUTION DETAIL</h5>
+          <button type="button" class="btn-close" (click)="closeDetailModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">EXECUTED AT</label>
+            <div>{{ detailExecution.executed_at | date:'yyyy-MM-dd HH:mm:ss' }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">STATUS</label>
+            <div>
+              @if (detailExecution.status === AutomationStatus.Success) {
+                <span class="badge bg-success">SUCCESS</span>
+              } @else if (detailExecution.status === AutomationStatus.Fail) {
+                <span class="badge bg-danger">FAILED</span>
+              } @else if (detailExecution.status === AutomationStatus.Unknown) {
+                <span class="badge bg-warning text-dark">RUNNING</span>
+              }
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">EVENT</label>
+            <div class="code-editor-container-modal code-readonly-container">
+              <app-code-editor
+                [ngModel]="detailEvent"
+                [readonly]="true"
+                height="200px"
+                [border]="true"
+              ></app-code-editor>
+            </div>
+          </div>
+
+          @if (detailExecution.status === AutomationStatus.Success) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold">RESULT</label>
+              <div class="code-editor-container-modal code-readonly-container">
+                <app-code-editor
+                  [ngModel]="detailResult"
+                  [readonly]="true"
+                  height="200px"
+                  [border]="true"
+                ></app-code-editor>
+              </div>
+            </div>
+          }
+
+          @if (detailExecution.status === AutomationStatus.Fail) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold">ERROR</label>
+              <div class="code-editor-container-modal code-readonly-container">
+                <app-code-editor
+                  [ngModel]="detailError"
+                  [readonly]="true"
+                  height="200px"
+                  [border]="true"
+                ></app-code-editor>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">CLOSE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

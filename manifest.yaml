@@ -14,6 +14,18 @@ extensions:
     resolver:
       function: resolver
     title: SNIPPETS
+  - key: app-admin-automations
+    resource: admin-automations
+    target: pcm:global:app:setting
+    resolver:
+      function: resolver
+    title: AUTOMATIONS
+  - key: app-admin-tiles
+    resource: admin-tiles
+    target: pcm:global:app:setting
+    resolver:
+      function: resolver
+    title: TILES
   - key: app-setting
     resource: admin
     target: pcm:global:app:setting
@@ -36,6 +48,10 @@ resources:
     path: web/admin-console/dist
   - key: admin-snippets
     path: web/admin-snippets/dist
+  - key: admin-automations
+    path: web/admin-automations/dist
+  - key: admin-tiles
+    path: web/admin-tiles/dist
   - key: admin
     path: web/admin/dist
   - key: tiles
