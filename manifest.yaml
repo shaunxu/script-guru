@@ -176,10 +176,15 @@ storage:
         - name: enabled
           type: boolean
           required: true
+        # depreciated
         - name: code-frontend
           type: string
-          required: true
+          required: false
+        # depreciated
         - name: code-backend
+          type: string
+          required: false
+        - name: html
           type: string
           required: false
       indexes:

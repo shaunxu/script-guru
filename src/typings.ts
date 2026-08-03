@@ -52,8 +52,6 @@ export interface Tile {
 
     enabled: boolean;
 
-    frontend: string;
-
-    backend: string;
+    html: string;
 
 }

@@ -22,6 +22,7 @@ import {
 } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
+import { html } from '@codemirror/lang-html';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
 import { bracketMatching } from '@codemirror/language';
@@ -63,6 +64,7 @@ export class CodeEditor implements ControlValueAccessor, AfterViewInit, OnDestro
   @Input() borderColor = '#343a40';
   @Input() readonly = false;
   @Input() placeholder = '';
+  @Input() language: 'javascript' | 'html' = 'javascript';
 
   value = '';
   disabled = false;
@@ -71,6 +73,7 @@ export class CodeEditor implements ControlValueAccessor, AfterViewInit, OnDestro
   private themeCompartment = new Compartment();
   private readOnlyCompartment = new Compartment();
   private editableCompartment = new Compartment();
+  private languageCompartment = new Compartment();
 
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
@@ -97,7 +100,7 @@ export class CodeEditor implements ControlValueAccessor, AfterViewInit, OnDestro
       bracketMatching(),
       closeBrackets(),
       keymap.of([...defaultKeymap, ...historyKeymap, ...closeBracketsKeymap]),
-      javascript({ typescript: true }),
+      this.languageCompartment.of(this.getLanguageExtension()),
       updateListener,
       this.themeCompartment.of(this.getThemeExtension()),
       this.readOnlyCompartment.of(EditorState.readOnly.of(this.readonly)),
@@ -138,6 +141,12 @@ export class CodeEditor implements ControlValueAccessor, AfterViewInit, OnDestro
           this.readOnlyCompartment.reconfigure(EditorState.readOnly.of(this.readonly)),
           this.editableCompartment.reconfigure(EditorView.editable.of(!this.readonly)),
         ],
+      });
+    }
+
+    if (changes['language']) {
+      this.editorView.dispatch({
+        effects: this.languageCompartment.reconfigure(this.getLanguageExtension()),
       });
     }
 
@@ -185,6 +194,13 @@ export class CodeEditor implements ControlValueAccessor, AfterViewInit, OnDestro
       return oneDark;
     }
     return [];
+  }
+
+  private getLanguageExtension(): Extension {
+    if (this.language === 'html') {
+      return html();
+    }
+    return javascript({ typescript: true });
   }
 
   private applyEditorStyles(): void {

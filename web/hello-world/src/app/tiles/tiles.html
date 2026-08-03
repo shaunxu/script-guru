@@ -17,7 +17,7 @@
       <tbody>
         @for (tile of tiles(); track tile.id) {
           <tr>
-            <td class="align-middle">{{ tile.target }}</td>
+            <td class="align-middle">{{ getTargetLabel(tile.target) }}</td>
             <td class="align-middle">{{ tile.name }}</td>
             <td class="align-middle">{{ tile.enabled ? 'YES' : 'NO' }}</td>
             <td class="text-end align-middle" style="width: 200px;">
@@ -45,23 +45,13 @@
 
 @if (showModal()) {
   <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" (click)="closeModal()">
-    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-dialog modal-dialog-centered modal-xl" (click)="$event.stopPropagation()">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ modalId ? 'EDIT TILE' : 'NEW TILE' }}</h5>
           <button type="button" class="btn-close" (click)="closeModal()"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">TARGET</label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="modalTarget"
-              placeholder="ENTER TARGET"
-            />
-          </div>
-
           <div class="mb-3">
             <label class="form-label fw-semibold">NAME</label>
             <input
@@ -73,11 +63,44 @@
           </div>
 
           <div class="mb-3">
+            <label class="form-label fw-semibold">DESCRIPTION</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="modalDescription"
+              placeholder="ENTER DESCRIPTION"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">TARGET</label>
+            <select class="form-select form-select-sm target-select" [(ngModel)]="modalTarget">
+              @for (target of targets | keyvalue; track target.key) {
+                <option [value]="target.key">{{ target.value }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="mb-3">
             <label class="form-label fw-semibold">ENABLED</label>
             <select class="form-select form-select-sm enabled-select" [(ngModel)]="modalEnabled">
               <option value="YES">YES</option>
               <option value="NO">NO</option>
             </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">HTML</label>
+            <app-code-editor
+              [(ngModel)]="modalHtml"
+              [language]="'html'"
+              [rows]="12"
+              [fontSize]="'13px'"
+              [lineHeight]="1.6"
+              [padding]="'12px'"
+              [border]="true"
+              [resize]="'vertical'"
+            ></app-code-editor>
           </div>
         </div>
         <div class="modal-footer">
