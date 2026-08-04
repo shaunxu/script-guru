@@ -26,12 +26,12 @@ extensions:
     resolver:
       function: resolver
     title: TILES
-  - key: app-setting
-    resource: admin
-    target: pcm:global:app:setting
-    resolver:
-      function: resolver
-    title: ADMIN
+  # - key: app-setting
+  #   resource: admin
+  #   target: pcm:global:app:setting
+  #   resolver:
+  #     function: resolver
+  #   title: ADMIN
   - key: pcm-pjm-workitem-area
     resource: tiles
     target: pcm:pjm:workitem:area
@@ -64,6 +64,8 @@ permissions:
       - unsafe-inline
   scopes:
     - pcp:storage:app
+    - pcp:read:global:team
+    - pcp:read:account:personal
     - pcp:read:pjm:workitem
     - pcp:write:pjm:workitem
     - pcp:read:pjm:configuration

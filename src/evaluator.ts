@@ -1,3 +1,4 @@
+import { app } from "@pc-nexus/core";
 import { api } from "@pc-nexus/network";
 import { setTimeout } from "node:timers";
 import { DisposableFail, DisposableSuccess, getQuickJS, QuickJSContext, Scope, type QuickJSHandle } from "quickjs-emscripten";
@@ -103,7 +104,7 @@ export async function evaluate(code: string, args: Record<string, unknown>): Pro
                         "context-type": "application/json"
                     },
                     body: body,
-                    as: "app"
+                    as: "user"
                 }).then(x => {
                     if (x.ok) {
                         return x.json();
@@ -121,6 +122,16 @@ export async function evaluate(code: string, args: Record<string, unknown>): Pro
                 return promise.handle;
             }));
             vm.setProp(vm.global, "requestApi", requestApiHandler);
+
+            const getContextHandler = scope.manage(vm.newFunction("getContext", () => {
+                const context = app.getContext();
+                return convertToQuickJSHandle({
+                    ...context.extension?.data || {},
+                    team: context.team,
+                    user: context.user
+                }, scope, vm);
+            }));
+            vm.setProp(vm.global, "getContext", getContextHandler);
 
             const wrappedCode = `"use strict";
 (async () => {

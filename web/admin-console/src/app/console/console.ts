@@ -3,10 +3,42 @@ import { FormsModule } from '@angular/forms';
 import { invoke } from '@pc-nexus/bridge';
 import { CodeEditor } from '@script-guru/shared';
 
-const DEFAULT_SCRIPT = `const workitem = await requestApi("v1/project/work_items/oM6fYrsz", "GET");
-console.log(JSON.stringify(workitem, null, 2));
-return workitem;
-`;
+// const DEFAULT_SCRIPT = `const user = getContext().user;
+// const states = (await requestApi("v1/pjm/work_item_states", "GET"))
+//   .values
+//   .filter(x => x.type !== "completed" && x.type !== "closed");
+// const state_ids = states.map(x => x.id);
+
+// const workitems = (await requestApi("v1/pjm/work_items/search", "POST", {
+//   mode: "query",
+//   payload: {
+//   	filter: {
+//       "assignee.id": {
+//         in: [user.id]
+//       },
+//       "state.id": {
+//       	in: state_ids
+//       }
+//   	}
+//   }
+// })).values;
+
+// return workitems.map(x => {
+//   return {
+//     identifier: x.identifier,
+//     title: x.title,
+//     state: x.state.name
+//   };
+// });`;
+
+const DEFAULT_SCRIPT = `const [team, user] = await Promise.all([
+  requestApi("v1/myself", "GET"),
+  requestApi("v1/directory/team", "GET")
+]);
+return {
+  team: team,
+  user: user
+};`;
 
 @Component({
   selector: 'app-console',

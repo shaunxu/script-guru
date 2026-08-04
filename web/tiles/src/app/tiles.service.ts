@@ -137,6 +137,10 @@ export class TilesService {
 
   async getContext() {
     const ctx = await view.getContext();
-    return ctx.extension.data;
+    return {
+      ...ctx.extension.data,
+      team: ctx.team,
+      user: ctx.user
+    };
   }
 }
